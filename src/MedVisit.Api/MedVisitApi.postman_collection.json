@@ -1,0 +1,42 @@
+{
+	"info": {
+		"_postman_id": "e5223427-96a3-415f-9532-918d6d6393c1",
+		"name": "otus",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "15158303",
+		"_collection_link": "https://red-equinox-728848.postman.co/workspace/electr~f3c28c52-eed3-4010-92ba-bdab47f8d121/collection/15158303-e5223427-96a3-415f-9532-918d6d6393c1?action=share&source=collection_link&creator=15158303"
+	},
+	"item": [
+		{
+			"name": "http://arch.homework/health",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://arch.homework/health",
+					"protocol": "http",
+					"host": [
+						"arch",
+						"homework"
+					],
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
