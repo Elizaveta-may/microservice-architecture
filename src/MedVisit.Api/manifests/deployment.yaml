@@ -1,0 +1,41 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: medvisit-api-dep
+  labels:
+    app: medvisit-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: medvisit-api
+  template:
+    metadata:
+      labels:
+        app: medvisit-api
+    spec:
+      containers:
+      - name: medvisit-api
+        image: elizavetamay/medvisit_api:1.0
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 8080
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "250m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 15  
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 5

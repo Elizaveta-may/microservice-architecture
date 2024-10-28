@@ -7,7 +7,7 @@ namespace MedVisit.Api.Controllers
     [Route("[controller]")]
     public class HealthController : ControllerBase
     {
-        [HttpGet("health")]
+        [HttpGet]
         public IActionResult GetHealth()
         {
             return Ok(new { status = "OK" });
