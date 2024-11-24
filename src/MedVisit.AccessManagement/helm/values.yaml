@@ -1,0 +1,23 @@
+﻿global:
+  postgresql:
+    auth:
+      username: auth
+      password: auth
+      database: authdb
+
+primary:
+  resources:
+    requests:
+      memory: 512Mi
+      cpu: 250m
+    limits:
+      memory: 1Gi
+      cpu: 500m
+
+replica:
+  replicaCount: 2
+
+persistence:
+  enabled: true
+  size: 8Gi
+  storageClass: "standard" 

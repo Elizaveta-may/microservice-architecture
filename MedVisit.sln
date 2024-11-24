@@ -5,6 +5,10 @@ VisualStudioVersion = 17.11.35303.130
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MedVisit.Api", "src\MedVisit.Api\MedVisit.Api.csproj", "{72DF8779-BE85-4E9E-8C41-25D3E0C7C692}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MedVisit.AccessManagement", "src\MedVisit.AccessManagement\MedVisit.AccessManagement.csproj", "{586BA322-F3D8-4458-9D65-465647B3A1A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedVisit.Common.AuthDbContext", "src\MedVisit.Common.AuthDbContext\MedVisit.Common.AuthDbContext.csproj", "{A06B6E8F-FC1D-4100-9FCB-587458CCE035}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{72DF8779-BE85-4E9E-8C41-25D3E0C7C692}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72DF8779-BE85-4E9E-8C41-25D3E0C7C692}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{72DF8779-BE85-4E9E-8C41-25D3E0C7C692}.Release|Any CPU.Build.0 = Release|Any CPU
+		{586BA322-F3D8-4458-9D65-465647B3A1A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{586BA322-F3D8-4458-9D65-465647B3A1A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{586BA322-F3D8-4458-9D65-465647B3A1A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{586BA322-F3D8-4458-9D65-465647B3A1A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A06B6E8F-FC1D-4100-9FCB-587458CCE035}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A06B6E8F-FC1D-4100-9FCB-587458CCE035}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A06B6E8F-FC1D-4100-9FCB-587458CCE035}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A06B6E8F-FC1D-4100-9FCB-587458CCE035}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

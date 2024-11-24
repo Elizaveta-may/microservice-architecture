@@ -1,0 +1,6 @@
+@MedVisit.AccessManagement_HostAddress = http://localhost:5271
+
+GET {{MedVisit.AccessManagement_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
