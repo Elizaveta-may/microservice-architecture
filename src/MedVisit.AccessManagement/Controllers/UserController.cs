@@ -2,11 +2,15 @@
 using MedVisit.AccessManagement.Mediatr.User.Handlers;
 using MedVisit.AccessManagement.Mediatr.User.Queries;
 using MedVisit.AccessManagement.Models.User;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 
 namespace MedVisit.AccessManagement.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("users")]
     public class UserController : ControllerBase
