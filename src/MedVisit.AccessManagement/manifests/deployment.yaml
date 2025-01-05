@@ -1,0 +1,45 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: accessmanagement
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: accessmanagement
+  template:
+    metadata:
+      labels:
+        app: accessmanagement
+    spec:
+      containers:
+      - name: app
+        image: elizavetamay/medvisit_accessmanagement:app
+        ports:
+        - containerPort: 8080
+        env:
+        - name: PostgresConnection__Host
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: PostgresConnection__Host
+        - name: PostgresConnection__Port
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: PostgresConnection__Port
+        - name: PostgresConnection__Database
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: PostgresConnection__Database
+        - name: DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: app-secret
+              key: DB_USERNAME
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: app-secret
+              key: DB_PASSWORD
