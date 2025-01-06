@@ -25,9 +25,8 @@ namespace MedVisit.AuthServer.Service
 
         public async Task<bool> RegisterUserAsync(RegisterModel model)
         {
-            if (await _dbContext.Users.AnyAsync(u => u.UserName == model.UserName))
+            if (await _dbContext.Users.AnyAsync(u => u.UserName == model.UserName || u.Email == model.Email))
                 return false;
-
 
             var (hash, salt) = PasswordService.HashPassword(model.Password);
             var user = new UserDb

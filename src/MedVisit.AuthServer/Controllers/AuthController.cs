@@ -1,6 +1,8 @@
 ﻿using MedVisit.AuthServer.Models;
 using MedVisit.AuthServer.Service.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace MedVisit.AuthServer.Controllers
 {
@@ -16,7 +18,6 @@ namespace MedVisit.AuthServer.Controllers
         {
             if (ModelState.IsValid)
             {
-                model.UserName = model.Email;
                 var success = await _authService.RegisterUserAsync(model);
                 return success ? Ok(new { message = "User registered successfully." }) : BadRequest(new { message = "Username or email already taken." });
             }
@@ -34,6 +35,20 @@ namespace MedVisit.AuthServer.Controllers
             }
 
             return BadRequest(ModelState);
+        }
+
+        [HttpGet("auth")]
+        public IActionResult CheckAuth()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+
+            if (userId == null)
+            {
+                return Unauthorized(new { message = "Token validation failed" });
+            }
+
+            return Ok(new { message = "Token is valid", userId });
         }
     }
 }
