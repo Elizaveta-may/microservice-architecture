@@ -21,7 +21,7 @@ helm repo update
 helm install postgres bitnami/postgresql -f ./infra/postgres/values.yaml
 ```
 
-## Установка Service
+## Установка Auth Service
 ```bash
 kubectl create namespace auth-service
 helm upgrade --install auth-service ./infra/auth-service/ --namespace auth-service
@@ -35,8 +35,6 @@ helm upgrade --install accessmanagement-service ./infra/accessmanagement-service
 
 ## Установка NGINX Ingress Controller (API GATEWAY)
 ```bash
-helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-helm repo update
 helm install ingress-nginx ingress-nginx/ingress-nginx
 kubectl apply -f infra/nginx-ingress/ingress.yaml
 ```
@@ -55,4 +53,6 @@ helm uninstall auth-service -n auth-service
 ```
 
 ## Тестирование
+```bash
 newman run homework6.postman_collection.json
+```
