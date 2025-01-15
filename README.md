@@ -14,11 +14,16 @@ docker build -t elizavetamay/medvisit_accessmanagement:app_1 -f accessmanagement
 docker push elizavetamay/medvisit_accessmanagement:app_1
 ```
 
-## Установка PostgreSQL
+## Установка RabbitMQ
+```bash
+helm install rabbitmq bitnami/rabbitmq -f  ./infra/rabbitmq/values.yaml
+```
+
+## Установка Auth PostgreSQL
 ```bash
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
-helm install postgres bitnami/postgresql -f ./infra/postgres/values.yaml
+helm install auth-postgres bitnami/postgresql -f ./infra/postgres/auth.values.yaml
 ```
 
 ## Установка Auth Service
@@ -31,6 +36,27 @@ helm upgrade --install auth-service ./infra/auth-service/ --namespace auth-servi
 ```bash
 kubectl create namespace accessmanagement-service
 helm upgrade --install accessmanagement-service ./infra/accessmanagement-service --namespace accessmanagement-service
+```
+  
+## Установка Payment Service и бд
+```bash
+kubectl create namespace payment-service
+helm install payment-postgres bitnami/postgresql -f ./infra/postgres/payment.values.yaml  --namespace payment-service 
+helm upgrade --install payment-service ./infra/payment-service/ --namespace payment-service   
+```
+ 
+## Установка Booking Service и бд
+```bash
+kubectl create namespace booking-service
+helm install booking-postgres bitnami/postgresql -f ./infra/postgres/booking.values.yaml --namespace booking-service 
+helm upgrade --install booking-service ./infra/booking-service/ --namespace booking-service   
+```
+
+## Установка Notification Service и бд
+```bash
+kubectl create namespace notification-service
+helm install notification-postgres bitnami/postgresql -f ./infra/postgres/notification.values.yaml --namespace notification-service 
+helm upgrade --install notification-service ./infra/notification-service/ --namespace notification-service  
 ```
 
 ## Установка NGINX Ingress Controller (API GATEWAY)
@@ -46,13 +72,23 @@ kubectl port-forward svc/ingress-nginx-controller 80:80
 
 ## Удаление
 ```bash
-helm uninstall postgres
+helm uninstall auth-postgres
 helm uninstall ingress-nginx
+helm uninstall rabbitmq
 helm uninstall accessmanagement-service -n accessmanagement-service
 helm uninstall auth-service -n auth-service 
+
+helm uninstall payment-postgres -n payment-service
+helm uninstall payment-service -n payment-service
+
+helm uninstall booking-postgres -n booking-service
+helm uninstall booking-service -n booking-service
+
+helm uninstall notification-postgres -n notification-service
+helm uninstall notification-service -n notification-service
 ```
 
 ## Тестирование
 ```bash
-newman run homework6.postman_collection.json
+newman run homework7.postman_collection.json
 ```
