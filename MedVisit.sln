@@ -13,6 +13,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedVisit.Core", "src\MedVis
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedVisit.AuthServer", "src\MedVisit.AuthServer\MedVisit.AuthServer.csproj", "{700D415D-D449-4CDE-A263-59EF612A0B98}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedVisit.BookingService", "src\MedVisit.BookingService\MedVisit.BookingService.csproj", "{1958F78F-8201-4231-8D07-27919AEF05CD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedVisit.PaymentService", "src\MedVisit.PaymentService\MedVisit.PaymentService.csproj", "{D52DEBDC-305A-450C-B9D4-DB0E25C46680}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedVisit.NotificationService", "src\MedVisit.NotificationService\MedVisit.NotificationService.csproj", "{DA2A919E-F044-49F1-9F5B-7ACBF79C64B6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +45,18 @@ Global
 		{700D415D-D449-4CDE-A263-59EF612A0B98}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{700D415D-D449-4CDE-A263-59EF612A0B98}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{700D415D-D449-4CDE-A263-59EF612A0B98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1958F78F-8201-4231-8D07-27919AEF05CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1958F78F-8201-4231-8D07-27919AEF05CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1958F78F-8201-4231-8D07-27919AEF05CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1958F78F-8201-4231-8D07-27919AEF05CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D52DEBDC-305A-450C-B9D4-DB0E25C46680}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D52DEBDC-305A-450C-B9D4-DB0E25C46680}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D52DEBDC-305A-450C-B9D4-DB0E25C46680}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D52DEBDC-305A-450C-B9D4-DB0E25C46680}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA2A919E-F044-49F1-9F5B-7ACBF79C64B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA2A919E-F044-49F1-9F5B-7ACBF79C64B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA2A919E-F044-49F1-9F5B-7ACBF79C64B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA2A919E-F044-49F1-9F5B-7ACBF79C64B6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

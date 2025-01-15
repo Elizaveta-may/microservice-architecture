@@ -23,10 +23,10 @@ namespace MedVisit.AuthServer.Service
             _configuration = configuration;
         }
 
-        public async Task<bool> RegisterUserAsync(RegisterModel model)
+        public async Task<int?> RegisterUserAsync(RegisterModel model)
         {
             if (await _dbContext.Users.AnyAsync(u => u.UserName == model.UserName || u.Email == model.Email))
-                return false;
+                return null;
 
             var (hash, salt) = PasswordService.HashPassword(model.Password);
             var user = new UserDb
@@ -40,7 +40,7 @@ namespace MedVisit.AuthServer.Service
             };
             _dbContext.Users.Add(user);
             await _dbContext.SaveChangesAsync();
-            return true;
+            return user.Id; 
         }
 
         public async Task<string?> AuthenticateUserAsync(string userName, string password)

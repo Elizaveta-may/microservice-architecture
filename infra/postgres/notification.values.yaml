@@ -1,0 +1,32 @@
+﻿global:
+  postgresql:
+    auth:
+      username: notification
+      password: notification
+      database: notificationdb
+
+primary:
+  resources:
+    requests:
+      memory: 512Mi
+      cpu: 250m
+    limits:
+      memory: 1Gi
+      cpu: 500m
+
+replica:
+  replicaCount: 2
+
+persistence:
+  enabled: true
+  size: 8Gi
+  storageClass: "standard"
+
+metrics:
+  enabled: false
+  serviceMonitor:
+    enabled: false
+    namespace: default  
+    interval: 30s  
+    path: /metrics 
+    port: metrics  

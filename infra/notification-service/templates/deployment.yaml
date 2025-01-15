@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "notification-service.fullname" . }}
+  labels:
+    {{- include "notification-service.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "notification-service.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "notification-service.labels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            - name: JwtSettings__Key
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: JwtSettings__Key
+            - name: PostgresConnection__Host
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: PostgresConnection__Host
+            - name: PostgresConnection__Port
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: PostgresConnection__Port
+            - name: PostgresConnection__Database
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: PostgresConnection__Database
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: DB_USERNAME
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: DB_PASSWORD
+            - name: RabbitMq__Host
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: RabbitMq__Host
+            - name: RABBIT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: RABBIT_PASSWORD
+            - name: RABBIT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: RABBIT_USER      

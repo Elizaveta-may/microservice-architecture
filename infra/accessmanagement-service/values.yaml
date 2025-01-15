@@ -138,7 +138,7 @@ metrics:
 postgresql:
   enabled: true
   postgresqlDatabase: authdb 
-  postgresqlHost: postgres-postgresql.default.svc
+  postgresqlHost: auth-postgres-postgresql.default.svc
 
 jwtSettings:
   issuer: AuthService
