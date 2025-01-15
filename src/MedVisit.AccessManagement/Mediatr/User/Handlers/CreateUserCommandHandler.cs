@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using MediatR;
 using MedVisit.AccessManagement.Models.User;
-using MedVisit.Common.AuthDbContext;
 using MedVisit.Common.AuthDbContext.Entities;
-using Microsoft.EntityFrameworkCore;
+using MedVisit.Common.AuthDbContext;
+using MedVisit.Core.Service;
 
 namespace MedVisit.AccessManagement.Mediatr.User.Handlers;
 
@@ -23,8 +23,14 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserD
     public async Task<UserDto> Handle(CreateUserCommand command, CancellationToken ct)
     {
         var userDb = _mapper.Map<UserDb>(command.User);
+        var generatedPassword = PasswordService.GeneratePassword(12);
+        var (hash, salt) = PasswordService.HashPassword(generatedPassword);
+        userDb.PasswordHash = hash;
+        userDb.PasswordSalt = salt;
         var result = await _context.Users.AddAsync(userDb, ct);
         await _context.SaveChangesAsync(ct);
+
+        //TODO Send invitation email with first password
         return _mapper.Map<UserDto>(result.Entity);
     }
 }

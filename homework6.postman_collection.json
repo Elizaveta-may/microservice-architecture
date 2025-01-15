@@ -1,0 +1,355 @@
+{
+	"info": {
+		"_postman_id": "5d912f93-d059-4cc8-8bae-00c83b8665f3",
+		"name": "homework6",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "15158303"
+	},
+	"item": [
+		{
+			"name": "Register_1_user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Пользователь 1 успешно зарегистрирован\", function () {\r",
+							"    pm.response.to.have.status(200); \r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstname\":\"Liza\",\r\n    \"lastname\":\"Maistrava\",\r\n    \"username\":\"emaistrava@email.com\",\r\n    \"email\":\"emaistrava@email.com\",\r\n    \"password\":\"12345678\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://arch.homework/register",
+					"protocol": "http",
+					"host": [
+						"arch",
+						"homework"
+					],
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check_getprofile_unauthorized_user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Запрос профиля без логина возвращает 401\", function () {\r",
+							"    pm.response.to.have.status(401); \r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://arch.homework/account/profile",
+					"protocol": "http",
+					"host": [
+						"arch",
+						"homework"
+					],
+					"path": [
+						"account",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login_1_user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Пользователь 1 успешно вошел\", function () {\r",
+							"    pm.response.to.have.status(200); \r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.environment.set(\"user1Token\", jsonData.token); \r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\":\"emaistrava@email.com\",\r\n    \"password\":\"12345678\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://arch.homework/login",
+					"protocol": "http",
+					"host": [
+						"arch",
+						"homework"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update_1_Profile",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Профиль пользователя 1 успешно обновлен\", function () {\r",
+							"    pm.response.to.have.status(200); \r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{user1Token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id\": 1,\r\n  \"userName\": \"emaistrava@email.com\",\r\n  \"firstName\": \"Liza1\",\r\n  \"lastName\": \"Maistrava1\",\r\n  \"email\": \"emaistrava@email.com\",\r\n  \"phone\": \"+375291781019\",\r\n  \"isActive\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://arch.homework/account/profile",
+					"protocol": "http",
+					"host": [
+						"arch",
+						"homework"
+					],
+					"path": [
+						"account",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get_1_Profile",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Данные профиля пользователя 1 обновлены\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.firstName).to.eql(\"Liza1\");\r",
+							"    pm.expect(jsonData.lastName).to.eql(\"Maistrava1\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{user1Token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://arch.homework/account/profile",
+					"protocol": "http",
+					"host": [
+						"arch",
+						"homework"
+					],
+					"path": [
+						"account",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register_2_user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Пользователь 2 успешно зарегистрирован\", function () {\r",
+							"    pm.response.to.have.status(200); \r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstname\":\"Ivan\",\r\n    \"lastname\":\"Ivanov\",\r\n    \"username\":\"ivanivan@email.com\",\r\n    \"email\":\"ivanivan@email.com\",\r\n    \"password\":\"87654321\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://arch.homework/register",
+					"protocol": "http",
+					"host": [
+						"arch",
+						"homework"
+					],
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login_2_User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Пользователь 2 успешно вошел\", function () {\r",
+							"    pm.response.to.have.status(200); \r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.environment.set(\"user2Token\", jsonData.token); \r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\":\"ivanivan@email.com\",\r\n    \"password\":\"87654321\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://arch.homework/login",
+					"protocol": "http",
+					"host": [
+						"arch",
+						"homework"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get_2_Profile",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Пользователь 2 видит свой профиль и не имеет доступа к профилю пользователя 1\", function () {\r",
+							"      pm.response.to.have.status(200);\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.firstName).to.eql(\"Ivan\");\r",
+							"    pm.expect(jsonData.lastName).to.eql(\"Ivanov\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{user2Token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://arch.homework/account/profile",
+					"protocol": "http",
+					"host": [
+						"arch",
+						"homework"
+					],
+					"path": [
+						"account",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
