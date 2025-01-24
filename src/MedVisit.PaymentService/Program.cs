@@ -1,4 +1,5 @@
 using System.Text;
+using MedVisit.Core.Middleware;
 using MedVisit.PaymentService;
 using MedVisit.PaymentService.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -23,20 +24,6 @@ builder.Services.AddScoped<IPaymentService, PaymentService>();
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
-            ValidAudience = builder.Configuration["JwtSettings:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"]))
-        };
-    });
 
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
@@ -46,6 +33,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
+builder.Services.AddHttpClient();
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
@@ -60,6 +48,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<AuthMiddleware>();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

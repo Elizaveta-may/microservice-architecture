@@ -7,11 +7,11 @@ replicaCount: 1
 
 # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
 image:
-  repository: elizavetamay/notificationservice
+  repository: elizavetamay/medvisit_notificationservice #elizavetamay/notificationservice
   # This sets the pull policy for images.
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: 11
+  tag: hw7
 
 # This is for the secretes for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets: []
@@ -135,4 +135,6 @@ postgresql:
   
 rabbitmq:
   host: rabbitmq.default.svc.cluster.local
-  
+
+endpoints: 
+  authService: "http://auth-service-medvisit-authserver.auth-service.svc.cluster.local:8080/auth/"  

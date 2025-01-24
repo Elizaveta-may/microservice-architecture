@@ -4,6 +4,7 @@ using MedVisit.Common.AuthDbContext;
 using MedVisit.Common.AuthDbContext.Entities;
 using MedVisit.Core.Service;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -72,7 +73,7 @@ namespace MedVisit.AuthServer.Service
         }
 
 
-        public static bool VerifyPassword(string password, string storedHash, string storedSalt)
+        private static bool VerifyPassword(string password, string storedHash, string storedSalt)
         {
             var salt = Convert.FromBase64String(storedSalt);
 
@@ -81,5 +82,26 @@ namespace MedVisit.AuthServer.Service
 
             return Convert.ToBase64String(hash) == storedHash;
         }
+
+        public async Task<string>  GenerateServiceToken()
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, "AuthServiceAccountId"),
+                    new Claim(ClaimTypes.Role, "AuthServiceAccount")
+                }),
+                Expires = DateTime.UtcNow.AddMinutes(30),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
+
     }
 }

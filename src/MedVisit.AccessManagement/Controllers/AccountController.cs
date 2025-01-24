@@ -4,7 +4,6 @@ using MedVisit.AccessManagement.Mediatr.User.Queries;
 using MedVisit.AccessManagement.Models.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace MedVisit.AccessManagement.Controllers
 {
@@ -30,11 +29,10 @@ namespace MedVisit.AccessManagement.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetProfile()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userId == null)
-                return Unauthorized();
-
-            var profile = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            Console.WriteLine("ТЕСТ");
+            var userId = User.FindFirst("user_id")?.Value;
+            Console.WriteLine(userId);
+            var profile = int.Parse(userId);
             return profile == null ? NotFound("Profile not found") : Ok(await _mediator.Send(new GetUserByIdQuery(profile)));
         }
 
@@ -48,10 +46,7 @@ namespace MedVisit.AccessManagement.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> UpdateProfile([FromBody] UserDto request)
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userIdClaim == null)
-                return Unauthorized();
-
+            var userIdClaim = User.FindFirst("user_id")?.Value;
             var userId = int.Parse(userIdClaim);
             return Ok(await _mediator.Send(new UpdateUserCommand(userId, request)));
         }

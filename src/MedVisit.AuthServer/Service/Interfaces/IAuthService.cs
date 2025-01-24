@@ -6,6 +6,7 @@ namespace MedVisit.AuthServer.Service.Interfaces
     {
         Task<int?> RegisterUserAsync(RegisterModel model);
         Task<string?> AuthenticateUserAsync(string userName, string password);
+        Task<string> GenerateServiceToken();
     }
 
 }

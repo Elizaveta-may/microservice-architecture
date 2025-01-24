@@ -6,9 +6,11 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 COPY ./MedVisit.NotificationService/MedVisit.NotificationService.csproj ./MedVisit.NotificationService/
+COPY ./MedVisit.Core/MedVisit.Core.csproj ./MedVisit.Core/
 RUN dotnet restore ./MedVisit.NotificationService/MedVisit.NotificationService.csproj
 
 COPY ./MedVisit.NotificationService/ ./MedVisit.NotificationService/
+COPY ./MedVisit.Core/ ./MedVisit.Core/
 RUN dotnet publish ./MedVisit.NotificationService/MedVisit.NotificationService.csproj -c Release -o /app/publish
 
 FROM base AS final

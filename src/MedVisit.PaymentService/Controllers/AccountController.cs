@@ -14,7 +14,7 @@ namespace MedVisit.PaymentService.Controllers
     {
         public int UserId { get; set; }
     }
-
+     
     [ApiController]
     [Route("payment")]
     public class AccountController : ControllerBase
@@ -40,6 +40,7 @@ namespace MedVisit.PaymentService.Controllers
             return CreatedAtAction(nameof(CreateAccount), new { id = createdAccountId }, createdAccountId);
         }
 
+        [Authorize]
         [HttpPost("withdraw")]
         public async Task<IActionResult> Withdraw([FromBody] WithdrawRequest request)
         {
@@ -48,7 +49,9 @@ namespace MedVisit.PaymentService.Controllers
                 return BadRequest(ModelState);
             }
 
-            var result = await _paymentService.WithdrawAsync(request.UserId, request.Amount);
+            var userId = User.FindFirst("user_id").Value;
+
+            var result = await _paymentService.WithdrawAsync(int.Parse(userId), request.Amount);
 
             if (!result.Success)
             {
@@ -62,6 +65,7 @@ namespace MedVisit.PaymentService.Controllers
             });
         }
 
+        [Authorize]
         [HttpPost("deposit")]
         public async Task<IActionResult> Deposit([FromBody] DepositRequest request)
         {
@@ -70,9 +74,7 @@ namespace MedVisit.PaymentService.Controllers
                 return BadRequest(ModelState);
             }
 
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userId == null)
-                return Unauthorized();
+            var userId = User.FindFirst("user_id").Value;
 
             var result = await _paymentService.DepositAsync(int.Parse(userId), request.Amount);
 
@@ -88,14 +90,14 @@ namespace MedVisit.PaymentService.Controllers
             });
         }
 
+        [Authorize]
         [HttpGet("account")]
         public async Task<IActionResult> GetAccount()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userId == null)
-                return Unauthorized();
 
-            var profile = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            var userId = User.FindFirst("user_id").Value;
+
+            var profile = int.Parse(userId);
             return profile == null ? NotFound("Аккаунт не найден") : Ok(await _mediator.Send(new GetAccountByUserIdQuery(profile)));
         }
     }

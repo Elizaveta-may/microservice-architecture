@@ -16,17 +16,21 @@ namespace MedVisit.BookingService.Services
         private readonly BookingDbContext _dbContext;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly EventPublisher _eventPublisher;
-        public OrderService(BookingDbContext dbContext, IHttpClientFactory httpClientFactory, EventPublisher eventPublisher)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public OrderService(BookingDbContext dbContext, IHttpClientFactory httpClientFactory, EventPublisher eventPublisher, IHttpContextAccessor httpContextAccessor)
         {
             _dbContext = dbContext;
             _httpClientFactory = httpClientFactory;
             _eventPublisher = eventPublisher;
+            _httpContextAccessor = httpContextAccessor;
         }
         public async Task<CreateOrderResult> CreateOrderAsync(int userId, CreateOrderRequest request)
         {
             try
             {
                 var httpClient = _httpClientFactory.CreateClient("PaymentService");
+                var token = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString()?.Replace("Bearer ", "");
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
                 var paymentResponse = await httpClient.PostAsJsonAsync("withdraw", new { UserId = userId, Amount = request.OrderAmount });
                 Console.WriteLine(paymentResponse);

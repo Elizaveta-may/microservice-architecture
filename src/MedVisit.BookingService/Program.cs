@@ -2,11 +2,11 @@ using System.Text;
 using MedVisit.BookingService;
 using MedVisit.BookingService.RabbitMq;
 using MedVisit.BookingService.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using MedVisit.Core.Middleware;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
+
 var host = builder.Configuration["PostgresConnection:Host"];
 var port = builder.Configuration["PostgresConnection:Port"];
 var database = builder.Configuration["PostgresConnection:Database"];
@@ -23,21 +23,6 @@ builder.Services.AddDbContext<BookingDbContext>(options =>
 builder.Services.AddScoped<IOrderService, OrderService>(); 
 builder.Services.AddSingleton<EventPublisher>();
 builder.Services.AddHttpContextAccessor();
-
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
-            ValidAudience = builder.Configuration["JwtSettings:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"]))
-        };
-    });
 
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
@@ -65,9 +50,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<AuthMiddleware>();
+
 app.UseHttpsRedirection();
 
-app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

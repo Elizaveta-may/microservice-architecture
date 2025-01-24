@@ -12,11 +12,13 @@ namespace MedVisit.AuthServer.Controllers
     {
         private readonly IAuthService _authService; 
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AuthController(IAuthService authService, IHttpClientFactory httpClientFactory)
+        public AuthController(IAuthService authService, IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor)
         {
             _authService = authService;
             _httpClientFactory = httpClientFactory;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpPost("register")]
@@ -72,11 +74,12 @@ namespace MedVisit.AuthServer.Controllers
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-
             if (userId == null)
             {
                 return Unauthorized(new { message = "Token validation failed" });
             }
+
+            HttpContext.Response.Headers.Add("x-user-id", userId);
 
             return Ok(new { message = "Token is valid", userId });
         }

@@ -6,9 +6,11 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 COPY ./MedVisit.PaymentService/MedVisit.PaymentService.csproj ./MedVisit.PaymentService/
+COPY ./MedVisit.Core/MedVisit.Core.csproj ./MedVisit.Core/
 RUN dotnet restore ./MedVisit.PaymentService/MedVisit.PaymentService.csproj
 
 COPY ./MedVisit.PaymentService/ ./MedVisit.PaymentService/
+COPY ./MedVisit.Core/ ./MedVisit.Core/
 RUN dotnet publish ./MedVisit.PaymentService/MedVisit.PaymentService.csproj -c Release -o /app/publish
 
 FROM base AS final

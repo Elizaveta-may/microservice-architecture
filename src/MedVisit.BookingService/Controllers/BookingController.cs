@@ -1,10 +1,12 @@
 ﻿using MedVisit.BookingService.Models;
 using MedVisit.BookingService.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace MedVisit.BookingService.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class BookingController : ControllerBase
@@ -24,9 +26,8 @@ namespace MedVisit.BookingService.Controllers
                 return BadRequest(ModelState);
             }
 
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userId == null)
-                return Unauthorized();
+            var userId = User.FindFirst("user_id")?.Value;
+
             var orderResult = await _orderService.CreateOrderAsync(int.Parse(userId), request);
 
             if (orderResult.OrderId == 0)

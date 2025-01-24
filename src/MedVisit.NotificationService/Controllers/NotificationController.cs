@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MedVisit.NotificationService.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NotificationService.Sevices;
-using System.Security.Claims;
 
-namespace NotificationService.Controllers
+namespace MedVisit.NotificationService.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class NotificationController : ControllerBase
@@ -20,9 +21,7 @@ namespace NotificationService.Controllers
         [HttpGet]
         public async Task<IActionResult> GetUserNotifications([FromServices] NotificationDbContext dbContext)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userId == null)
-                return Unauthorized();
+            var userId = User.FindFirst("user_id")?.Value;
 
             var notifications = await dbContext.Notifications
                 .Where(n => n.UserId == int.Parse(userId))

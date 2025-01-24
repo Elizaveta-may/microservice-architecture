@@ -11,7 +11,7 @@ image:
   # This sets the pull policy for images.
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: 5
+  tag: hw7
 # This is for the secretes for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets: []
 # This is to override the chart name.
@@ -145,3 +145,7 @@ jwtSettings:
   issuer: AuthService
   audience: AccessManagementService
   key: F1B7D3B8A6F23E8B3B5DB6880A31C5D2D30E0D0A3D6F1A846D5C2F2B1D92C9A6
+
+
+endpoints: 
+  authService: "http://auth-service-medvisit-authserver.auth-service.svc.cluster.local:8080/auth/"

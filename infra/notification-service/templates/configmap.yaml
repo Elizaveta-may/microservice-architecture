@@ -10,3 +10,4 @@ data:
   PostgresConnection__Database: {{ .Values.postgresql.postgresqlDatabase }}
   JwtSettings__Key: {{ .Values.jwtSettings.key }}
   RabbitMq__Host: {{ .Values.rabbitmq.host }}
+  Endpoints__AuthService: {{ .Values.endpoints.authService}}

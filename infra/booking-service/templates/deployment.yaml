@@ -36,7 +36,12 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: app-config
-                  key: Endpoints__PaymentService      
+                  key: Endpoints__PaymentService   
+            - name: Endpoints__AuthService
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: Endpoints__AuthService            
             - name: PostgresConnection__Host
               valueFrom:
                 configMapKeyRef:
