@@ -29,9 +29,7 @@ namespace MedVisit.AccessManagement.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetProfile()
         {
-            Console.WriteLine("ТЕСТ");
             var userId = User.FindFirst("user_id")?.Value;
-            Console.WriteLine(userId);
             var profile = int.Parse(userId);
             return profile == null ? NotFound("Profile not found") : Ok(await _mediator.Send(new GetUserByIdQuery(profile)));
         }

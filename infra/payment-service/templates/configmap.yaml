@@ -8,5 +8,4 @@ data:
   PostgresConnection__Host: {{ .Values.postgresql.postgresqlHost }}
   PostgresConnection__Port: "5432"
   PostgresConnection__Database: {{ .Values.postgresql.postgresqlDatabase }}
-  JwtSettings__Key: {{ .Values.jwtSettings.key }}
   Endpoints__AuthService: {{ .Values.endpoints.authService}}

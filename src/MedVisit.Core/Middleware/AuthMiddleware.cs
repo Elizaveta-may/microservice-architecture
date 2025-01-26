@@ -20,7 +20,6 @@ namespace MedVisit.Core.Middleware
 
         public async Task InvokeAsync(HttpContext context)
         {
-            Console.WriteLine("CORE");
             var token = context.Request.Headers["Authorization"].ToString()?.Replace("Bearer ", "");
             if (!string.IsNullOrEmpty(token))
             {
@@ -40,7 +39,6 @@ namespace MedVisit.Core.Middleware
                     ? response.Headers.GetValues("x-user-id").FirstOrDefault()
                     : null;
 
-                Console.WriteLine("CORE:"+userId);
                 if (!string.IsNullOrEmpty(userId))
                 {
                     var claims = new List<Claim> { new Claim("user_id", userId) };

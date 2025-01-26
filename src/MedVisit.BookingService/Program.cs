@@ -12,7 +12,6 @@ var port = builder.Configuration["PostgresConnection:Port"];
 var database = builder.Configuration["PostgresConnection:Database"];
 var username = Environment.GetEnvironmentVariable("DB_USERNAME");
 var password = Environment.GetEnvironmentVariable("DB_PASSWORD");
-Console.WriteLine("Creds: " + Environment.GetEnvironmentVariable("RABBIT_PASSWORD"));
 
 var connectionString = $"Host={host};Port={port};Database={database};Username={username};Password={password}";
 

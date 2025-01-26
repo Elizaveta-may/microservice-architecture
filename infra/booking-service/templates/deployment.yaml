@@ -27,11 +27,6 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
-            - name: JwtSettings__Key
-              valueFrom:
-                configMapKeyRef:
-                  name: app-config
-                  key: JwtSettings__Key
             - name: Endpoints__PaymentService
               valueFrom:
                 configMapKeyRef:

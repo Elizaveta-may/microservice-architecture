@@ -139,12 +139,7 @@ postgresql:
   enabled: true
   postgresqlDatabase: authdb 
   postgresqlHost: auth-postgres-postgresql.default.svc
-
-jwtSettings:
-  issuer: AuthService
-  audience: AccessManagementService
-  key: F1B7D3B8A6F23E8B3B5DB6880A31C5D2D30E0D0A3D6F1A846D5C2F2B1D92C9A6
-
+  
 endpoints: 
   authService: "http://auth-service-medvisit-authserver.auth-service.svc.cluster.local:8080/auth/"
 
