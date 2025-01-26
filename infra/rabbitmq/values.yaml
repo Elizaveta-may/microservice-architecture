@@ -1,0 +1,8 @@
+﻿auth:
+  username: rabbitmq
+  password: rabbitmq
+
+persistence:
+  enabled: true
+  storageClass: "standard"
+  size: 1Gi

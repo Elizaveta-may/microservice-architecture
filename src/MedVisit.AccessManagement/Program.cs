@@ -1,6 +1,5 @@
-using System.Text;
 using MedVisit.Common.AuthDbContext;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using MedVisit.Core.Middleware;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -19,22 +18,8 @@ builder.Services.AddDbContext<AuthDbContext>(options =>
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
-            ValidAudience = builder.Configuration["JwtSettings:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"]))
-        };
-    });
-
 builder.Services.AddAuthorization();
+
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -46,6 +31,7 @@ builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
@@ -59,6 +45,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<AuthMiddleware>();
 
 app.UseHttpsRedirection();
 

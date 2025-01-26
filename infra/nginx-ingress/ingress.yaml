@@ -5,8 +5,6 @@ metadata:
   namespace: accessmanagement-service
   annotations:
     kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/auth-url: http://arch.homework/auth
-    nginx.ingress.kubernetes.io/auth-response-headers: x-user_id
 spec:
   ingressClassName: nginx 
   rules:
@@ -63,4 +61,70 @@ spec:
               service:
                 name: auth-service-medvisit-authserver
                 port:
-                  number: 8080        
+                  number: 8080                 
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: payment-service
+  namespace: payment-service
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: arch.homework
+      http:
+        paths:
+          - path: /payment
+            pathType: Prefix
+            backend:
+              service:
+                name: payment-service
+                port:
+                  number: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: booking-service
+  namespace: booking-service
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: arch.homework
+      http:
+        paths:
+          - path: /booking
+            pathType: Prefix
+            backend:
+              service:
+                name: booking-service
+                port:
+                  number: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: notification-service
+  namespace: notification-service
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: arch.homework
+      http:
+        paths:
+          - path: /notification
+            pathType: Prefix
+            backend:
+              service:
+                name: notification-service
+                port:
+                  number: 8080
+
+         
+         

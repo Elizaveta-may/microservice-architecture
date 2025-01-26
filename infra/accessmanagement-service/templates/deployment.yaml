@@ -27,11 +27,11 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}   
           env:
-            - name: JwtSettings__Key
+            - name: Endpoints__AuthService
               valueFrom:
                 configMapKeyRef:
                   name: app-config
-                  key: JwtSettings__Key
+                  key: Endpoints__AuthService   
             - name: PostgresConnection__Host
               valueFrom:
                 configMapKeyRef:

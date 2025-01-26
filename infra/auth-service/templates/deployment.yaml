@@ -32,6 +32,11 @@ spec:
                 configMapKeyRef:
                   name: auth-service-config
                   key: JwtSettings__Key
+            - name: Endpoints__PaymentService
+              valueFrom:
+                configMapKeyRef:
+                  name: auth-service-config
+                  key: Endpoints__PaymentService
             - name: PostgresConnection__Host
               valueFrom:
                 configMapKeyRef:
