@@ -39,15 +39,25 @@ namespace MedVisit.Core.Middleware
                     ? response.Headers.GetValues("x-user-id").FirstOrDefault()
                     : null;
 
+                var userRole = response.Headers.Contains("x-user-role")
+                    ? response.Headers.GetValues("x-user-role").FirstOrDefault()
+                    : null;
+
                 if (!string.IsNullOrEmpty(userId))
                 {
-                    var claims = new List<Claim> { new Claim("user_id", userId) };
+                    var claims = new List<Claim>
+                    {
+                        new Claim("user_id", userId),
+                        new Claim(ClaimTypes.Role, userRole ) 
+                    };
+
                     var identity = new ClaimsIdentity(claims, "AuthService");
                     context.User = new ClaimsPrincipal(identity);
                 }
             }
             await _next(context);
         }
+
     }
 
 }

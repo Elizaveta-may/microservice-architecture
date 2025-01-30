@@ -73,6 +73,7 @@ namespace MedVisit.AuthServer.Controllers
         public IActionResult CheckAuth()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
 
             if (userId == null)
             {
@@ -80,8 +81,9 @@ namespace MedVisit.AuthServer.Controllers
             }
 
             HttpContext.Response.Headers.Add("x-user-id", userId);
+            HttpContext.Response.Headers.Add("x-user-role", userRole);
 
-            return Ok(new { message = "Token is valid", userId });
+            return Ok(new { message = "Token is valid", userId, userRole });
         }
     }
 }

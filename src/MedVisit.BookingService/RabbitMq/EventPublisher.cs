@@ -22,7 +22,6 @@ namespace MedVisit.BookingService.RabbitMq
                 UserName = Environment.GetEnvironmentVariable("RABBIT_USER"),
                 Password = Environment.GetEnvironmentVariable("RABBIT_PASSWORD")
             };
-            Console.WriteLine("Creds: " + factory.HostName + " " + factory.UserName + " "+ factory.Password);
             try
             {
                 await using var connection = await factory.CreateConnectionAsync();
@@ -43,7 +42,6 @@ namespace MedVisit.BookingService.RabbitMq
                     body: body,
                     cancellationToken: CancellationToken.None);
 
-                Console.WriteLine(" [x] Sent message to exchange '{0}': {1}", exchangeName, message);
             }
             catch (BrokerUnreachableException ex)
             {

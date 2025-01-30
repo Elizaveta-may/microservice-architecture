@@ -31,7 +31,12 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: app-config
-                  key: Endpoints__PaymentService   
+                  key: Endpoints__PaymentService  
+            - name: Endpoints__ScheduleService   
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: Endpoints__ScheduleService     
             - name: Endpoints__AuthService
               valueFrom:
                 configMapKeyRef:

@@ -10,6 +10,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using MedVisit.Core;
 
 namespace MedVisit.AuthServer.Service
 {
@@ -37,7 +38,8 @@ namespace MedVisit.AuthServer.Service
                 Email = model.Email,
                 UserName = model.UserName,
                 PasswordHash = hash,
-                PasswordSalt = salt
+                PasswordSalt = salt, 
+                Role = model.Role
             };
             _dbContext.Users.Add(user);
             await _dbContext.SaveChangesAsync();
@@ -58,7 +60,8 @@ namespace MedVisit.AuthServer.Service
                 Subject = new ClaimsIdentity(new Claim[]
                 {
                     new(ClaimTypes.Name, user.UserName),
-                    new(ClaimTypes.NameIdentifier, user.Id.ToString())
+                    new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new(ClaimTypes.Role, user.Role.ToString()),
                 }),
                 Expires = DateTime.UtcNow.AddHours(1),
                 Issuer = _configuration["JwtSettings:Issuer"],

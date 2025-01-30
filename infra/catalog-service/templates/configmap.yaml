@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  labels:
+    app: catalog-service
+data:
+  PostgresConnection__Host: {{ .Values.postgresql.postgresqlHost }}
+  PostgresConnection__Port: "5432"
+  PostgresConnection__Database: {{ .Values.postgresql.postgresqlDatabase }}
+  Endpoints__AuthService: {{ .Values.endpoints.authService}}

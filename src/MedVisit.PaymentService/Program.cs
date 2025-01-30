@@ -16,7 +16,7 @@ var username = Environment.GetEnvironmentVariable("DB_USERNAME");
 var password = Environment.GetEnvironmentVariable("DB_PASSWORD");
 
 var connectionString = $"Host={host};Port={port};Database={database};Username={username};Password={password}";
-Console.WriteLine(connectionString);
+
 builder.Services.AddDbContext<PaymentDbContext>(options =>
     options.UseNpgsql(connectionString));
 

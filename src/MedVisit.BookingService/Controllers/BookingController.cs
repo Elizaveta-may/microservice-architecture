@@ -18,8 +18,9 @@ namespace MedVisit.BookingService.Controllers
             _orderService = orderService;
         }
 
-        [HttpPost("order")]
-        public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request)
+        [HttpPost("booking")]
+        [Authorize(Roles = "User")]
+        public async Task<IActionResult> Booking([FromBody] OrderRequest request)
         {
             if (!ModelState.IsValid)
             {
@@ -28,18 +29,42 @@ namespace MedVisit.BookingService.Controllers
 
             var userId = User.FindFirst("user_id")?.Value;
 
-            var orderResult = await _orderService.CreateOrderAsync(int.Parse(userId), request);
+            var orderResult = await _orderService.ProcessOrderAsync(int.Parse(userId), request);
 
-            if (orderResult.OrderId == 0)
+            if (!orderResult.IsSuccess)
             {
-                return BadRequest(new { message = "Недостаточно средств." });
+                return BadRequest(new { message = orderResult.Message });
             }
 
             return Ok(new
             {
-                message = "Заказ успешно создан.",
+                message = "Заказ успешно создан."
+            });
+        }
+
+
+        [HttpPut("cancelBooking")]
+        [Authorize(Roles = "User")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> CancelBooking(int orderId)
+        {
+
+            var userId = User.FindFirst("user_id")?.Value;
+
+            var orderResult = await _orderService.ProcessCancelOrderAsync(int.Parse(userId), orderId);
+
+            if (orderResult.OrderId == 0)
+            {
+                return BadRequest(new { message = "Ошибка отмены бронирования." });
+            }
+
+            return Ok(new
+            {
+                message = "Бронь успешно отменена.",
                 orderId = orderResult.OrderId
             });
         }
+
     }
 }

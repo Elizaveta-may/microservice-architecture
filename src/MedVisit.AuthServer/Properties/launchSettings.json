@@ -18,7 +18,9 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "DB_USERNAME": "auth",
-        "DB_PASSWORD": "auth"
+        "DB_PASSWORD": "auth",
+        "RABBIT_USER": "guest",
+        "RABBIT_PASSWORD": "guest"
       }
     },
     "https": {

@@ -1,4 +1,6 @@
-﻿namespace MedVisit.AccessManagement.Models.User
+﻿using MedVisit.Core.Enums;
+
+namespace MedVisit.AccessManagement.Models.User
 {
     public class UserDto
     {
@@ -9,5 +11,6 @@
         public string Email { get; set; }
         public string Phone { get; set; }
         public bool IsActive { get; set; }
+        public Roles Role { get; set; }
     }
 }

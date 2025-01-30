@@ -19,6 +19,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedVisit.PaymentService", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedVisit.NotificationService", "src\MedVisit.NotificationService\MedVisit.NotificationService.csproj", "{DA2A919E-F044-49F1-9F5B-7ACBF79C64B6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedVisit.CatalogService", "src\MedVisit.CatalogService\MedVisit.CatalogService.csproj", "{F562EE15-B766-4891-A1C1-D74282ACDD35}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedVisit.ScheduleService", "src\MedVisit.ScheduleService\MedVisit.ScheduleService.csproj", "{292A4CD7-B7D8-4ECB-A73C-6A1551A672DE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +61,14 @@ Global
 		{DA2A919E-F044-49F1-9F5B-7ACBF79C64B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA2A919E-F044-49F1-9F5B-7ACBF79C64B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA2A919E-F044-49F1-9F5B-7ACBF79C64B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F562EE15-B766-4891-A1C1-D74282ACDD35}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F562EE15-B766-4891-A1C1-D74282ACDD35}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F562EE15-B766-4891-A1C1-D74282ACDD35}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F562EE15-B766-4891-A1C1-D74282ACDD35}.Release|Any CPU.Build.0 = Release|Any CPU
+		{292A4CD7-B7D8-4ECB-A73C-6A1551A672DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{292A4CD7-B7D8-4ECB-A73C-6A1551A672DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{292A4CD7-B7D8-4ECB-A73C-6A1551A672DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{292A4CD7-B7D8-4ECB-A73C-6A1551A672DE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

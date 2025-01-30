@@ -52,6 +52,20 @@ helm install booking-postgres bitnami/postgresql -f ./infra/postgres/booking.val
 helm upgrade --install booking-service ./infra/booking-service/ --namespace booking-service   
 ```
 
+## Установка Catalog Service и бд
+```bash
+kubectl create namespace catalog-service
+helm install catalog-postgres bitnami/postgresql -f ./infra/postgres/catalog.values.yaml --namespace catalog-service 
+helm upgrade --install catalog-service ./infra/catalog-service/ --namespace catalog-service   
+```
+
+## Установка Schegule Service и бд
+```bash
+kubectl create namespace schedule-service
+helm install schedule-postgres bitnami/postgresql -f ./infra/postgres/schedule.values.yaml --namespace schedule-service 
+helm upgrade --install schedule-service ./infra/schedule-service/ --namespace schedule-service   
+```
+
 ## Установка Notification Service и бд
 ```bash
 kubectl create namespace notification-service
@@ -84,11 +98,17 @@ helm uninstall payment-service -n payment-service
 helm uninstall booking-postgres -n booking-service
 helm uninstall booking-service -n booking-service
 
+helm uninstall catalog-postgres -n catalog-service
+helm uninstall catalog-service -n catalog-service
+
+helm uninstall schedule-postgres -n schedule-service
+helm uninstall schedule-service -n schedule-service
+
 helm uninstall notification-postgres -n notification-service
 helm uninstall notification-service -n notification-service
 ```
 
 ## Тестирование
 ```bash
-newman run homework7.postman_collection.json
+newman run homework8.postman_collection.json
 ```
