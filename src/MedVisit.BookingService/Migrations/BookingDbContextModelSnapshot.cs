@@ -36,11 +36,28 @@ namespace MedVisit.BookingService.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("ServiceName")
+                    b.Property<int>("MedServiceId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("MedServiceName")
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("MedicalWorkerFullName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("MedicalWorkerId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TimeSlot")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("TimeSlotId")
                         .HasColumnType("integer");
 
                     b.Property<int>("UserId")

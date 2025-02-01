@@ -20,6 +20,7 @@ builder.Services.AddDbContext<BookingDbContext>(options =>
 // Add services to the container.
 
 builder.Services.AddScoped<IOrderService, OrderService>(); 
+builder.Services.AddScoped<ISagaStepsService, SagaStepsService>();
 builder.Services.AddSingleton<EventPublisher>();
 builder.Services.AddHttpContextAccessor();
 
@@ -32,6 +33,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient("PaymentService", client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["Endpoints:PaymentService"]);
+});
+builder.Services.AddHttpClient("ScheduleService", client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["Endpoints:ScheduleService"]);
 });
 
 
@@ -53,6 +58,7 @@ app.UseMiddleware<AuthMiddleware>();
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

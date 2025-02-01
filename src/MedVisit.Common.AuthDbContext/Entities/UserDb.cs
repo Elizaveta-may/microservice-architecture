@@ -1,4 +1,8 @@
-﻿namespace MedVisit.Common.AuthDbContext.Entities;
+﻿using System.Data;
+using MedVisit.Core;
+using MedVisit.Core.Enums;
+
+namespace MedVisit.Common.AuthDbContext.Entities;
 
 public class UserDb
 {
@@ -12,4 +16,5 @@ public class UserDb
     public bool IsActive { get; set; } = true;
     public string PasswordHash { get; set; }
     public string PasswordSalt { get; set; }
+    public required Roles Role { get; set; }
 }

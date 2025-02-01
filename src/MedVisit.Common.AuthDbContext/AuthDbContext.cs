@@ -12,6 +12,9 @@ public class AuthDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<UserDb>().ToTable("Users");
+        modelBuilder.Entity<UserDb>()
+            .Property(e => e.Role)
+            .HasConversion<int>();
         base.OnModelCreating(modelBuilder);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MedVisit.AccessManagement.Models.User;
 using MedVisit.Common.AuthDbContext.Entities;
+using MedVisit.Core.Enums;
 
 namespace MedVisit.AccessManagement.AutoMapper;
 

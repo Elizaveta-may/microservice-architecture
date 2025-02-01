@@ -1,4 +1,11 @@
 # microservice-architecture
+В 8 дз реализована распределенная транзакция с помощью паттерна саги, где управление процессом выполняет оркестратор.
+
+Добавлены три сервиса: авторизации, каталога и расписания. В авторизации появились роли клиента и владельца услуг. В каталоге владелец может добавлять услуги и медицинских работников. В расписании он управляет графиком, а клиент бронирует свободные слоты.
+
+Когда клиент делает бронирование, сначала списываются деньги. Если все прошло успешно, сервис бронирует время в расписании, затем сохраняет запись о бронировании в базе и отправляет уведомление пользователю. Если на каком-то этапе что-то идет не так, выполняются компенсирующие действия. Например, если не удалось забронировать время, деньги возвращаются, а бронь отменяется.
+
+Отправка уведомления не требует компенсации, так как оно не влияет на сам процесс бронирования. Даже если уведомление не дойдет, бронь останется в силе. В результате система работает так, что либо бронирование проходит полностью, либо все изменения отменяются.
 
 ## Чарты сервисов
 ```bash
@@ -52,6 +59,20 @@ helm install booking-postgres bitnami/postgresql -f ./infra/postgres/booking.val
 helm upgrade --install booking-service ./infra/booking-service/ --namespace booking-service   
 ```
 
+## Установка Catalog Service и бд
+```bash
+kubectl create namespace catalog-service
+helm install catalog-postgres bitnami/postgresql -f ./infra/postgres/catalog.values.yaml --namespace catalog-service 
+helm upgrade --install catalog-service ./infra/catalog-service/ --namespace catalog-service   
+```
+
+## Установка Schegule Service и бд
+```bash
+kubectl create namespace schedule-service
+helm install schedule-postgres bitnami/postgresql -f ./infra/postgres/schedule.values.yaml --namespace schedule-service 
+helm upgrade --install schedule-service ./infra/schedule-service/ --namespace schedule-service   
+```
+
 ## Установка Notification Service и бд
 ```bash
 kubectl create namespace notification-service
@@ -84,11 +105,17 @@ helm uninstall payment-service -n payment-service
 helm uninstall booking-postgres -n booking-service
 helm uninstall booking-service -n booking-service
 
+helm uninstall catalog-postgres -n catalog-service
+helm uninstall catalog-service -n catalog-service
+
+helm uninstall schedule-postgres -n schedule-service
+helm uninstall schedule-service -n schedule-service
+
 helm uninstall notification-postgres -n notification-service
 helm uninstall notification-service -n notification-service
 ```
 
 ## Тестирование
 ```bash
-newman run homework7.postman_collection.json
+newman run homework8.postman_collection.json
 ```

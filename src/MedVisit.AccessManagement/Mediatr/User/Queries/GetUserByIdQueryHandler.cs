@@ -2,7 +2,6 @@
 using MediatR;
 using MedVisit.AccessManagement.Models.User;
 using MedVisit.Common.AuthDbContext;
-using MedVisit.Common.AuthDbContext.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace MedVisit.AccessManagement.Mediatr.User.Queries;

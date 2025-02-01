@@ -1,4 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
+using MedVisit.Core;
+using MedVisit.Core.Enums;
 
 namespace MedVisit.AuthServer.Models
 {
@@ -24,5 +27,9 @@ namespace MedVisit.AuthServer.Models
         [Required(ErrorMessage = "Password is required")]
         [StringLength(100, ErrorMessage = "Password must be at least 8 characters", MinimumLength = 8)]
         public string Password { get; set; }
+
+        [Required(ErrorMessage = "Role is required")]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public Roles Role { get; set; }
     }
 }

@@ -10,4 +10,5 @@ data:
   PostgresConnection__Database: {{ .Values.postgresql.postgresqlDatabase }}
   Endpoints__PaymentService: {{ .Values.endpoints.paymentService}}
   Endpoints__AuthService: {{ .Values.endpoints.authService}}
+  Endpoints__ScheduleService: {{ .Values.endpoints.scheduleService}}
   RabbitMq__Host: {{ .Values.rabbitmq.host }}

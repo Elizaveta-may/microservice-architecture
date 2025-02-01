@@ -1,94 +1,140 @@
-﻿using MedVisit.BookingService.Entities;
-using MedVisit.BookingService.Enums;
+﻿using MedVisit.BookingService.Enums;
 using MedVisit.BookingService.Models;
-using MedVisit.BookingService.RabbitMq;
-using System.Net.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace MedVisit.BookingService.Services
 {
     public interface IOrderService
     {
-        Task<CreateOrderResult> CreateOrderAsync(int userId, CreateOrderRequest request);
+        Task<OrderResult> ProcessOrderAsync(int userId, OrderRequest request);
+        Task<OrderResult> ProcessCancelOrderAsync(int userId, int orderId);
     }
 
     public class OrderService : IOrderService
     {
         private readonly BookingDbContext _dbContext;
-        private readonly IHttpClientFactory _httpClientFactory;
-        private readonly EventPublisher _eventPublisher;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        public OrderService(BookingDbContext dbContext, IHttpClientFactory httpClientFactory, EventPublisher eventPublisher, IHttpContextAccessor httpContextAccessor)
+        private readonly ISagaStepsService _sagaStepsService;
+
+        public OrderService(
+            BookingDbContext dbContext,
+            ISagaStepsService sagaStepsService)
+
         {
             _dbContext = dbContext;
-            _httpClientFactory = httpClientFactory;
-            _eventPublisher = eventPublisher;
-            _httpContextAccessor = httpContextAccessor;
+            _sagaStepsService = sagaStepsService;
         }
-        public async Task<CreateOrderResult> CreateOrderAsync(int userId, CreateOrderRequest request)
+
+        public async Task<OrderResult> ProcessOrderAsync(int userId, OrderRequest request)
         {
+            var saga = new BookingSaga();
+
             try
             {
-                var httpClient = _httpClientFactory.CreateClient("PaymentService");
-                var token = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString()?.Replace("Bearer ", "");
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                //TODO later add check data consistency
+                saga.AddStep(
+                    name: "PaymentMedService",
+                    action: async () => await _sagaStepsService.PayForService(userId, request.Amount, request.MedServiceName),
+                    compensate: async () => await _sagaStepsService.RefundPayment(userId, request.Amount)
+                );
 
-                var paymentResponse = await httpClient.PostAsJsonAsync("withdraw", new { UserId = userId, Amount = request.OrderAmount });
-                Console.WriteLine(paymentResponse);
-                if (!paymentResponse.IsSuccessStatusCode)
+                saga.AddStep(
+                    name: "BookTimeSlot",
+                    action: async () => await _sagaStepsService.BookTimeSlot(userId, request.TimeSlotId),
+                    compensate: async () => await _sagaStepsService.CancelTimeSlot(userId, request.TimeSlotId)
+                );
+
+                saga.AddStep(
+                    name: "SaveBookingToDatabase",
+                    action: async () => await _sagaStepsService.SaveBookingToDatabase(userId, request),
+                    compensate: async () => await _sagaStepsService.RemoveBookingFromDatabase(userId, request)
+                );
+
+                saga.AddStep(
+                    name: "SendNotification",
+                    action: async () => await _sagaStepsService.SendSuccessBookingNotification(userId, request),
+                    compensate: null
+                );
+
+                await saga.ExecuteAsync();
+
+                return new OrderResult
                 {
-                    await _eventPublisher.PublishAsync("booking_exchange", new
-                    {
-                        UserId = userId,
-                        Status = "Failed",
-                        Message = $"Не удалось оплатить {request.ServiceName} со стоимостью {request.OrderAmount:C}. Недостаточно средств или произошла ошибка платежа.",
-                        Subject = "Ошибка оплаты",
-                        Timestamp = DateTime.UtcNow
-                    });
-
-                    return new CreateOrderResult
-                    {
-                        OrderId = 0,
-                        Success = false,
-                        Message = "Оплата не прошла. Заказ не может быть создан."
-                    };
-                }
-
-                var order = new OrderDb
-                {
-                    UserId = userId,
-                    Amount = request.OrderAmount,
-                    ServiceName = request.ServiceName,
-                    CreatedAt = DateTime.UtcNow,
-                    Status = OrderStatus.Created
-                };
-
-                await _dbContext.Orders.AddAsync(order);
-                await _dbContext.SaveChangesAsync();
-
-                await _eventPublisher.PublishAsync("booking_exchange", new
-                {
-                    UserId = userId,
-                    Status = "Success",
-                    Message = $"Оплата услуги успешно завершена. Номер заказа: {order.Id}, Сумма: {request.OrderAmount:C}.",
-                    Subject = "Успешная оплата",
-                    Timestamp = DateTime.UtcNow
-                });
-
-
-                return new CreateOrderResult
-                {
-                    OrderId = order.Id,
-                    Success = true,
-                    Message = "Заказ успешно создан."
+                    IsSuccess = true,
+                    Message = "Бронирование успешно завершено."
                 };
             }
             catch (Exception ex)
             {
-                return new CreateOrderResult
+                Console.WriteLine($"Ошибка при обработке заказа: {ex.Message}");
+
+                return new OrderResult
                 {
-                    OrderId = 0,
-                    Success = false,
-                    Message = $"Произошла ошибка: {ex.Message}"
+                    IsSuccess = false,
+                    Message = $"Ошибка бронирования: {ex.Message}"
+                };
+            }
+        }
+
+        public async Task<OrderResult> ProcessCancelOrderAsync(int userId, int orderId)
+        {
+            var order = await _dbContext.Orders
+                .Where(o => o.Id == orderId)
+                .Select(o => new OrderRequest
+                {
+                    Amount = o.Amount,
+                    MedServiceId = o.MedServiceId,
+                    MedServiceName = o.MedServiceName,
+                    MedicalWorkerId = o.MedicalWorkerId,
+                    MedicalWorkerFullName = o.MedicalWorkerFullName,
+                    TimeSlotId = o.TimeSlotId,
+                    TimeSlot = o.TimeSlot
+                })
+                .FirstOrDefaultAsync();
+
+            var saga = new BookingSaga();
+
+            try
+            {
+                saga.AddStep(
+                    name: "PayForService",
+                    action: async () => await _sagaStepsService.RefundPayment(userId, order.Amount),
+                    compensate: async () => await _sagaStepsService.PayForService(userId, order.Amount, order.MedServiceName)
+                );
+
+                saga.AddStep(
+                    name: "BookTimeSlot",
+                    action: async () => await _sagaStepsService.CancelTimeSlot(userId, order.TimeSlotId),
+                    compensate: async () => await _sagaStepsService.BookTimeSlot(userId, order.TimeSlotId)
+                );
+
+                saga.AddStep(
+                    name: "SaveBookingToDatabase",
+                    action: async () => await _sagaStepsService.UpdateOrderStatusInDatabase(userId, OrderStatus.Canceled),
+                    compensate: async () => await _sagaStepsService.UpdateOrderStatusInDatabase(userId, OrderStatus.Completed)
+                );
+
+                saga.AddStep(
+                    name: "SendNotification",
+                    action: async () => await _sagaStepsService.SendSuccessCancelBookingNotification(userId, order),
+                    compensate: null
+                );
+
+                await saga.ExecuteAsync();
+
+                return new OrderResult
+                {
+                    IsSuccess = true,
+                    Message = "Бронирование успешно отменено."
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при обработке отмены брони: {ex.Message}");
+
+                return new OrderResult
+                {
+                    IsSuccess = false,
+                    Message = $"Ошибка отмены бронирования: {ex.Message}"
                 };
             }
         }

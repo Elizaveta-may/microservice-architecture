@@ -92,6 +92,7 @@ namespace MedVisit.PaymentService.Controllers
 
         [Authorize]
         [HttpGet("account")]
+        [Authorize(Roles = "User")]
         public async Task<IActionResult> GetAccount()
         {
 
