@@ -12,7 +12,6 @@ namespace MedVisit.BookingService.Services
         Task<bool> RefundPayment(int userId, decimal amount);
         Task<bool> BookTimeSlot(int userId, int timeSlotId);
         Task<bool> CancelTimeSlot(int userId, int timeSlotId);
-        Task<bool> SaveBookingToDatabase(int userId, OrderRequest request);
         Task<bool> UpdateOrderStatusInDatabase(int orderId, OrderStatus status);
         Task RemoveBookingFromDatabase(int userId, OrderRequest request);
         Task<bool> SendSuccessBookingNotification(int userId, OrderRequest request);
@@ -117,34 +116,6 @@ namespace MedVisit.BookingService.Services
                     return false;
                 }
 
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        public async Task<bool> SaveBookingToDatabase(int userId, OrderRequest request)
-        {
-            try
-            {
-                var booking = new OrderDb
-                {
-                    UserId = userId,
-                    MedServiceId = request.MedServiceId,
-                    MedServiceName = request.MedServiceName,
-                    MedicalWorkerId = request.MedicalWorkerId,
-                    MedicalWorkerFullName = request.MedicalWorkerFullName,
-                    TimeSlotId = request.TimeSlotId,
-                    TimeSlot = request.TimeSlot,
-                    Amount = request.Amount,
-                    CreatedAt = DateTime.UtcNow,
-                    Status = OrderStatus.Completed
-                };
-
-                await _dbContext.Orders.AddAsync(booking);
-                await _dbContext.SaveChangesAsync();
                 return true;
             }
             catch (Exception)

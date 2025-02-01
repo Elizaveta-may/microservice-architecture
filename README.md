@@ -26,6 +26,11 @@ docker push elizavetamay/medvisit_accessmanagement:app_1
 helm install rabbitmq bitnami/rabbitmq -f  ./infra/rabbitmq/values.yaml
 ```
 
+## Установка Redis
+```bash
+helm install redis bitnami/redis -f ./infra/redis/values.yaml
+```
+
 ## Установка Auth PostgreSQL
 ```bash
 helm repo add bitnami https://charts.bitnami.com/bitnami
@@ -96,6 +101,7 @@ kubectl port-forward svc/ingress-nginx-controller 80:80
 helm uninstall auth-postgres
 helm uninstall ingress-nginx
 helm uninstall rabbitmq
+helm uninstall redis
 helm uninstall accessmanagement-service -n accessmanagement-service
 helm uninstall auth-service -n auth-service 
 
@@ -117,5 +123,5 @@ helm uninstall notification-service -n notification-service
 
 ## Тестирование
 ```bash
-newman run homework8.postman_collection.json
+newman run Homework9.postman_collection.json
 ```

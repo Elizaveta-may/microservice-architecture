@@ -1,4 +1,5 @@
-﻿using MedVisit.BookingService.Enums;
+﻿using MedVisit.BookingService.Entities;
+using MedVisit.BookingService.Enums;
 using MedVisit.BookingService.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,7 +28,7 @@ namespace MedVisit.BookingService.Services
         public async Task<OrderResult> ProcessOrderAsync(int userId, OrderRequest request)
         {
             var saga = new BookingSaga();
-
+            int orderId = 0;
             try
             {
                 //TODO later add check data consistency
@@ -45,7 +46,29 @@ namespace MedVisit.BookingService.Services
 
                 saga.AddStep(
                     name: "SaveBookingToDatabase",
-                    action: async () => await _sagaStepsService.SaveBookingToDatabase(userId, request),
+                    action: async () =>
+                    {
+                        var booking = new OrderDb
+                        {
+                            UserId = userId,
+                            MedServiceId = request.MedServiceId,
+                            MedServiceName = request.MedServiceName,
+                            MedicalWorkerId = request.MedicalWorkerId,
+                            MedicalWorkerFullName = request.MedicalWorkerFullName,
+                            TimeSlotId = request.TimeSlotId,
+                            TimeSlot = request.TimeSlot,
+                            Amount = request.Amount,
+                            CreatedAt = DateTime.UtcNow,
+                            Status = OrderStatus.Completed
+                        };
+
+                        await _dbContext.Orders.AddAsync(booking);
+                        await _dbContext.SaveChangesAsync();
+
+                        orderId = booking.Id; 
+
+                        return true;
+                    },
                     compensate: async () => await _sagaStepsService.RemoveBookingFromDatabase(userId, request)
                 );
 
@@ -59,6 +82,7 @@ namespace MedVisit.BookingService.Services
 
                 return new OrderResult
                 {
+                    OrderId = orderId,
                     IsSuccess = true,
                     Message = "Бронирование успешно завершено."
                 };
@@ -69,6 +93,7 @@ namespace MedVisit.BookingService.Services
 
                 return new OrderResult
                 {
+                    OrderId = orderId,
                     IsSuccess = false,
                     Message = $"Ошибка бронирования: {ex.Message}"
                 };
