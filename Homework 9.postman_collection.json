@@ -1,0 +1,1229 @@
+{
+	"info": {
+		"_postman_id": "21f154ee-34cc-4d23-af77-9f870ecdb2d5",
+		"name": "Homework 9",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "15158303"
+	},
+	"item": [
+		{
+			"name": "Owner",
+			"item": [
+				{
+					"name": "RegisterServiceOwner",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Пользователь 1 (владелец организации) успешно зарегистрирован\", function () {\r",
+									"    pm.response.to.have.status(200); \r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\":\"Liza\",\r\n    \"lastname\":\"Maistrava\",\r\n    \"username\":\"ema@email.com\",\r\n    \"email\":\"ema@email.com\",\r\n    \"password\":\"12345678\",\r\n    \"role\": \"ServiceOwner\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "LoginServiceOwner",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Пользователь 1 успешно зашел\", function () {\r",
+									"    pm.response.to.have.status(200); \r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.collectionVariables.set(\"ownerToken\", jsonData.token); \r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"ema@email.com\",\r\n    \"password\":\"12345678\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetOwnerProfile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Данные профиля пользователя 1\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.firstName).to.eql(\"Liza\");\r",
+									"    pm.expect(jsonData.lastName).to.eql(\"Maistrava\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{ownerToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/account/profile",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"account",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateOrganization",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Пользователь 1 (владелец организации) успешно создал свою организацию\", function () {\r",
+									"    pm.response.to.have.status(201); \r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.collectionVariables.set(\"organizationId\", pm.response.json().id);\r",
+									"\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{ownerToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"{{organizationName}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/catalog/Organizations",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"catalog",
+								"Organizations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetOwnerOrganization",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Организации пользователя 1 \", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.id).to.eql(Number(pm.collectionVariables.get(\"organizationId\")));\r",
+									"    pm.expect(jsonData.name).to.eql(pm.collectionVariables.get(\"organizationName\"));\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{ownerToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/catalog/Organizations/ownerOrganization",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"catalog",
+								"Organizations",
+								"ownerOrganization"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateMedicalWorker",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Пользователь 1 (владелец организации) успешно создал мед работника в организации\", function () {\r",
+									"    pm.response.to.have.status(201); \r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.collectionVariables.set(\"medWorkerId\", jsonData.id); \r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{ownerToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fullname\": \"{{medWorkerName}}\",\r\n    \"Specialization\": \"ЛОР-врач\",\r\n    \"OrganizationId\": {{organizationId}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/catalog/MedicalWorkers/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"catalog",
+								"MedicalWorkers",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetMedicalWorkersInOrg",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Хотя бы один работник должен содержать id созданный ранее\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    let containsWorkerId = jsonData.some(item => item.id == pm.collectionVariables.get(\"medWorkerId\"));\r",
+									"    pm.expect(containsWorkerId).to.be.true;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{ownerToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/catalog/MedicalWorkers/organization/{{organizationId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"catalog",
+								"MedicalWorkers",
+								"organization",
+								"{{organizationId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateMedService",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Пользователь 1 (владелец организации) успешно создал мед услугу в организации\", function () {\r",
+									"    pm.response.to.have.status(201); \r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.collectionVariables.set(\"medServiceId\", jsonData.id); \r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{ownerToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"{{medServiceName}}\",\r\n    \"Type\": \"приём\",\r\n    \"Category\": \"консультация\",\r\n    \"Price\": {{price}},\r\n    \"MedicalWorkerIds\" : [{{medWorkerId}}],\r\n    \"OrganizationId\": {{organizationId}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/catalog/MedServices/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"catalog",
+								"MedServices",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetMedServicesByID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Получить мед услугу по ID\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.organizationId).to.eql(Number(pm.collectionVariables.get(\"organizationId\")));\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{ownerToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/catalog/MedServices/{{medServiceId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"catalog",
+								"MedServices",
+								"{{medServiceId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetMedServicesInOrg",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Получить все услуги в организации\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    const jsonData = pm.response.json();\r",
+									"    let containsOrgId = jsonData.some(item => item.organizationId == pm.collectionVariables.get(\"organizationId\"));\r",
+									"    pm.expect(containsOrgId).to.be.true;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{ownerToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/catalog/MedServices/organization/{{organizationId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"catalog",
+								"MedServices",
+								"organization",
+								"{{organizationId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateScheduleMedicalWorker",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Создание окошек для мед работникиа {{medWorkerId}} на дату\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{ownerToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n{\r\n  \"medicalWorkerId\": {{medWorkerId}},\r\n  \"medServiceId\": {{medServiceId}},\r\n  \"startDate\": \"2025-02-27T08:00:00\",\r\n  \"endDate\": \"2025-02-27T12:00:00\",\r\n  \"timeSlotInMinutes\": 30\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/schedule/create",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"schedule",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetAvailableScheduleMedicalWorker",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Получение окошек для мед работника {{medWorkerId}} на дату\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    const jsonData = pm.response.json();\r",
+									"    let containsWorkerId = jsonData.some(item => item.medicalWorkerId === pm.collectionVariables.get(\"medicalWorkerId\"));\r",
+									"    //pm.expect(containsWorkerId).to.be.true;\r",
+									"    console.log(\"Response body: \",containsWorkerId)\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{ownerToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/schedule/GetAllSlots?medicalWorkerId={{medWorkerId}}&date=2025-02-27",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"schedule",
+								"GetAllSlots"
+							],
+							"query": [
+								{
+									"key": "medicalWorkerId",
+									"value": "{{medWorkerId}}"
+								},
+								{
+									"key": "date",
+									"value": "2025-02-27"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "RegisterUser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Пользователь 2 успешно зарегистрирован\", function () {\r",
+									"    pm.response.to.have.status(200); \r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\":\"Ivan\",\r\n    \"lastname\":\"Ivanov\",\r\n    \"username\":\"ivanov@email.com\",\r\n    \"email\":\"ivanov@email.com\",\r\n    \"password\":\"87654321\",\r\n    \"role\": \"User\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "LoginUser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Пользователь 2 успешно зашел\", function () {\r",
+									"    pm.response.to.have.status(200); \r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.collectionVariables.set(\"userToken\", jsonData.token); \r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"ivanov@email.com\",\r\n    \"password\":\"87654321\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUserProfile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Данные профиля пользователя\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.firstName).to.eql(\"Ivan\");\r",
+									"    pm.expect(jsonData.lastName).to.eql(\"Ivanov\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/account/profile",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"account",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deposit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Пополнение баланса пользователя на 100р\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.balance).to.eql(100.0);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Amount\":{{deposit}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/payment/deposit?Authorization=Bearer {{userToken}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"payment",
+								"deposit"
+							],
+							"query": [
+								{
+									"key": "Authorization",
+									"value": "Bearer {{userToken}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUserPaymentAccount",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Данные аккаунта для оплаты пользователя\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    const jsonData = pm.response.json();\r",
+									"    console.log(\"Response body: \",jsonData)\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/payment/account?Authorization=Bearer {{userToken}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"payment",
+								"account"
+							],
+							"query": [
+								{
+									"key": "Authorization",
+									"value": "Bearer {{userToken}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ShowOrganizations",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Доступные организации\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    const jsonData = pm.response.json();\r",
+									"    console.log(\"Response body: \",jsonData)\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/catalog/Organizations/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"catalog",
+								"Organizations",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ShowAllMedServicesInOrganizations",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Доступные услуги в организации\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    const jsonData = pm.response.json();\r",
+									"    console.log(\"Response body: \",jsonData)\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/catalog/MedServices/organization/{{organizationId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"catalog",
+								"MedServices",
+								"organization",
+								"{{organizationId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetAvailableScheduleMedicalWorkerMedService",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Доступные окошки врача на определенную дату\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    const jsonData = pm.response.json();\r",
+									"    console.log(\"Response body: \",jsonData)\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/schedule/GetAllSlots?medicalWorkerId={{medWorkerId}}&date={{startDate}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"schedule",
+								"GetAllSlots"
+							],
+							"query": [
+								{
+									"key": "medicalWorkerId",
+									"value": "{{medWorkerId}}"
+								},
+								{
+									"key": "date",
+									"value": "{{startDate}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateSuccessOrder",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Проверка возвращает ли Idempotency-Key тот же результат\", function () {\r",
+									"    var responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson.message).to.eql(\"Заказ успешно создан.\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var uniqueKey = pm.variables.replaceIn('{{$guid}}');\r",
+									"pm.collectionVariables.set('Idempotency-Key', uniqueKey);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Idempotency-Key",
+								"value": "{{Idempotency-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"MedServiceId\": {{medServiceId}},\r\n    \"MedServiceName\": \"{{medServiceName}}\",\r\n    \"MedicalWorkerId\":{{medWorkerId}},\r\n    \"MedicalWorkerFullName\": \"{{medWorkerName}}\",\r\n    \"TimeSlotId\": 1,\r\n    \"TimeSlot\":\"2025-02-27T05:00-2025-02-27T05:30\",\r\n    \"Amount\": {{price}}\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/booking/booking",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"booking",
+								"booking"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateDuplicateOrder",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Проверка предотвращает ли Idempotency-Key дублирование заказов.\", function () {\r",
+									"    var secondResponse = pm.response.json();\r",
+									"    pm.expect(secondResponse.message).to.eql(\"Заказ уже создан ранее.\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Idempotency-Key",
+								"value": "{{Idempotency-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"MedServiceId\": {{medServiceId}},\r\n    \"MedServiceName\": \"{{medServiceName}}\",\r\n    \"MedicalWorkerId\": {{medWorkerId}},\r\n    \"MedicalWorkerFullName\": \"{{medWorkerName}}\",\r\n    \"TimeSlotId\": 1,\r\n    \"TimeSlot\":\"2025-02-27T05:00-2025-02-27T05:30\",\r\n    \"Amount\": {{price}}\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/booking/booking",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"booking",
+								"booking"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://arch.homework",
+			"type": "string"
+		},
+		{
+			"key": "organizationName",
+			"value": "Медицинский центр 'Доктор Тут'",
+			"type": "string"
+		},
+		{
+			"key": "medWorkerName",
+			"value": "Петрова И. И.",
+			"type": "string"
+		},
+		{
+			"key": "medServiceName",
+			"value": "Первичный приём лора",
+			"type": "string"
+		},
+		{
+			"key": "startDate",
+			"value": "2025-02-27\n",
+			"type": "string"
+		},
+		{
+			"key": "deposit",
+			"value": "100",
+			"type": "string"
+		},
+		{
+			"key": "price",
+			"value": "50",
+			"type": "string"
+		},
+		{
+			"key": "organizationId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "medWorkerId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "medServiceId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "ownerToken",
+			"value": ""
+		},
+		{
+			"key": "userToken",
+			"value": ""
+		},
+		{
+			"key": "Idempotency-Key",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
