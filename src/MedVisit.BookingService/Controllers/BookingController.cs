@@ -3,6 +3,7 @@ using MedVisit.BookingService.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Storage;
+using Newtonsoft.Json;
 using StackExchange.Redis;
 using System.Security.Claims;
 
@@ -20,6 +21,14 @@ namespace MedVisit.BookingService.Controllers
         {
             _orderService = orderService;
             _redisDb = redis.GetDatabase();
+        }
+
+        [HttpPost("generate-idempotency-key")]
+        [Authorize(Roles = "User")]
+        public IActionResult GenerateIdempotencyKey()
+        {
+            var idempotencyKey = Guid.NewGuid().ToString();
+            return Ok(new { IdempotencyKey = idempotencyKey });
         }
 
         [HttpPost("booking")]
@@ -42,6 +51,7 @@ namespace MedVisit.BookingService.Controllers
             {
                 return Ok(new { message = "Заказ уже создан ранее.", result = cachedResult.ToString() });
             }
+
             var userId = User.FindFirst("user_id")?.Value;
 
             var orderResult = await _orderService.ProcessOrderAsync(int.Parse(userId), request);
@@ -51,7 +61,7 @@ namespace MedVisit.BookingService.Controllers
                 return BadRequest(new { message = orderResult.Message });
             }
 
-            await _redisDb.StringSetAsync(idempotencyKey, "Заказ успешно создан.", TimeSpan.FromHours(1));
+            await _redisDb.StringSetAsync(idempotencyKey, JsonConvert.SerializeObject(orderResult), TimeSpan.FromHours(1));
 
             return Ok(new
             {

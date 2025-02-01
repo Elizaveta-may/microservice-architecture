@@ -1008,6 +1008,66 @@
 					"response": []
 				},
 				{
+					"name": "GetIdempotencyKey",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Получение Idempotency-Key\", function () {\r",
+									"    var responseJson = pm.response.json();\r",
+									"    console.log(\"Response body: \",responseJson)\r",
+									"    pm.collectionVariables.set(\"Idempotency-Key\", pm.response.json().IdempotencyKey);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/booking/generate-idempotency-key",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"booking",
+								"generate-idempotency-key"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "CreateSuccessOrder",
 					"event": [
 						{
@@ -1016,6 +1076,7 @@
 								"exec": [
 									"pm.test(\"Проверка возвращает ли Idempotency-Key тот же результат\", function () {\r",
 									"    var responseJson = pm.response.json();\r",
+									"    console.log(\"Response body: \",responseJson)\r",
 									"    pm.expect(responseJson.message).to.eql(\"Заказ успешно создан.\");\r",
 									"});\r",
 									""
@@ -1028,8 +1089,6 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"var uniqueKey = pm.variables.replaceIn('{{$guid}}');\r",
-									"pm.collectionVariables.set('Idempotency-Key', uniqueKey);\r",
 									""
 								],
 								"type": "text/javascript",
@@ -1082,6 +1141,7 @@
 								"exec": [
 									"pm.test(\"Проверка предотвращает ли Idempotency-Key дублирование заказов.\", function () {\r",
 									"    var secondResponse = pm.response.json();\r",
+									"    console.log(\"Response body: \",secondResponse)\r",
 									"    pm.expect(secondResponse.message).to.eql(\"Заказ уже создан ранее.\");\r",
 									"});"
 								],
