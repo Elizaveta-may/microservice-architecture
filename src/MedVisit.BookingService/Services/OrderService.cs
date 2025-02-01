@@ -82,6 +82,7 @@ namespace MedVisit.BookingService.Services
 
                 return new OrderResult
                 {
+                    OrderId = orderId,
                     IsSuccess = true,
                     Message = "Бронирование успешно завершено."
                 };
