@@ -1,7 +1,21 @@
 controller:
+  kind: DaemonSet
+  extraArgs:
+    metrics-per-host: false
   metrics:
     enabled: true
     serviceMonitor:
+      additionalLabels:
+        release: prometheus
       enabled: true
-    additionalLabels:
-      release: prometheus
+
+  reportNodeInternalIp: true
+
+  hostPort:
+    enabled: true
+    ports:
+      http: 80
+      https: 443
+
+  service:
+    type: NodePort

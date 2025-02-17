@@ -1,22 +1,21 @@
-﻿# apiVersion: monitoring.coreos.com/v1
-# kind: ServiceMonitor
-# metadata:
-#   name: accessmanagement-service
-#   namespace: default
-#   labels:
-#     app: accessmanagement-service
-#     release: prometheus 
-#     chart: "accessmanagement-service-{{ .Chart.Version }}"
-#     heritage: "Helm"
-# spec:
-#   jobLabel: accessmanagement-service
-#   namespaceSelector:
-#     matchNames:
-#     - default 
-#   selector:
-#     matchLabels:
-#       app: accessmanagement-service  
-#   endpoints:
-#   - interval: 10s
-#     port: http 
-#     path: /metrics
+﻿apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: accessmanagement-service
+  namespace: accessmanagement-service
+  labels:
+    app: accessmanagement-service
+    release: prometheus
+spec:
+  jobLabel: accessmanagement-service
+  namespaceSelector:
+    matchNames:
+      - accessmanagement-service  
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: accessmanagement-service
+      app.kubernetes.io/name: accessmanagement-service
+  endpoints:
+    - port: http  
+      path: /metrics
+      interval: 10s
