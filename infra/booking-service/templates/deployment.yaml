@@ -82,3 +82,8 @@ spec:
                 secretKeyRef:
                   name: app-secret
                   key: RABBIT_USER
+            - name: Redis__Host
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: Redis__Host      
