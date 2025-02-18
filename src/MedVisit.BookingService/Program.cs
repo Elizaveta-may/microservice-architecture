@@ -4,6 +4,7 @@ using MedVisit.BookingService.RabbitMq;
 using MedVisit.BookingService.Services;
 using MedVisit.Core.Middleware;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,10 @@ builder.Services.AddDbContext<BookingDbContext>(options =>
 builder.Services.AddScoped<IOrderService, OrderService>(); 
 builder.Services.AddScoped<ISagaStepsService, SagaStepsService>();
 builder.Services.AddSingleton<EventPublisher>();
+builder.Services.AddSingleton<IConnectionMultiplexer>(
+    ConnectionMultiplexer.Connect(builder.Configuration["Redis:Host"])
+);
+
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddAuthorization();

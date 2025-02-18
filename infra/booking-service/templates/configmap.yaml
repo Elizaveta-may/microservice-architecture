@@ -12,3 +12,4 @@ data:
   Endpoints__AuthService: {{ .Values.endpoints.authService}}
   Endpoints__ScheduleService: {{ .Values.endpoints.scheduleService}}
   RabbitMq__Host: {{ .Values.rabbitmq.host }}
+  Redis__Host: {{ .Values.redis.host }}
