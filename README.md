@@ -1,11 +1,4 @@
 # microservice-architecture
-В 8 дз реализована распределенная транзакция с помощью паттерна саги, где управление процессом выполняет оркестратор.
-
-Добавлены три сервиса: авторизации, каталога и расписания. В авторизации появились роли клиента и владельца услуг. В каталоге владелец может добавлять услуги и медицинских работников. В расписании он управляет графиком, а клиент бронирует свободные слоты.
-
-Когда клиент делает бронирование, сначала списываются деньги. Если все прошло успешно, сервис бронирует время в расписании, затем сохраняет запись о бронировании в базе и отправляет уведомление пользователю. Если на каком-то этапе что-то идет не так, выполняются компенсирующие действия. Например, если не удалось забронировать время, деньги возвращаются, а бронь отменяется.
-
-Отправка уведомления не требует компенсации, так как оно не влияет на сам процесс бронирования. Даже если уведомление не дойдет, бронь останется в силе. В результате система работает так, что либо бронирование проходит полностью, либо все изменения отменяются.
 
 ## Чарты сервисов
 ```bash
@@ -15,10 +8,28 @@ infra/
 ## Подготовка docker-образов
 ```bash
 cd src
-docker build -t elizavetamay/medvisit_authserver:auth1 -f authserver.Dockerfile .
-docker push elizavetamay/medvisit_authserver:auth1
-docker build -t elizavetamay/medvisit_accessmanagement:app_1 -f accessmanagement.Dockerfile .
-docker push elizavetamay/medvisit_accessmanagement:app_1
+docker build -t elizavetamay/medvisit_accessmanagement:hw8 -f accessmanagement.Dockerfile .
+docker build -t elizavetamay/medvisit_authserver:hw8 -f authserver.Dockerfile .
+docker build -t elizavetamay/medvisit_bookingservice:hw9 -f bookingservice.Dockerfile .
+docker build -t elizavetamay/medvisit_catalogservice:hw8 -f catalogservice.Dockerfile .
+docker build -t elizavetamay/medvisit_scheduleservice:hw8 -f scheduleservice.Dockerfile .
+docker build -t elizavetamay/medvisit_paymentservice:hw8 -f paymentservice.Dockerfile .
+docker build -t elizavetamay/medvisit_notificationservice:hw8 -f notificationservice.Dockerfile .
+
+docker push elizavetamay/medvisit_accessmanagement:hw8
+docker push elizavetamay/medvisit_authserver:hw8
+docker push elizavetamay/medvisit_catalogservice:hw8
+docker push elizavetamay/medvisit_scheduleservice:hw8
+docker push elizavetamay/medvisit_bookingservice:hw9
+docker push elizavetamay/medvisit_paymentservice:hw8
+docker push elizavetamay/medvisit_notificationservice:hw8
+```
+
+## Установка Prometheus Grafana
+```bash
+helm upgrade --install prometheus prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace -f infra/prometheus/prometheus.yaml
+kubectl port-forward svc/prometheus-grafana  3000:80 -n monitoring
+kubectl get secret prometheus-grafana -n monitoring -o jsonpath="{.data.admin-password}" | ForEach-Object { [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($_)) }
 ```
 
 ## Установка RabbitMQ
@@ -102,6 +113,7 @@ helm uninstall auth-postgres
 helm uninstall ingress-nginx
 helm uninstall rabbitmq
 helm uninstall redis
+helm uninstall prometheus -n monitoring
 helm uninstall accessmanagement-service -n accessmanagement-service
 helm uninstall auth-service -n auth-service 
 
