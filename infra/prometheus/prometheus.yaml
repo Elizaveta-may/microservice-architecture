@@ -2,3 +2,9 @@ prometheus:
   prometheusSpec:
     serviceMonitorSelectorNilUsesHelmValues: false
     serviceMonitorSelector: {}
+    additionalScrapeConfigs:
+      - job_name: 'postgres'
+        static_configs:
+          - targets: ['auth-postgres-postgresql-metrics.default.svc.cluster.local:9187']  
+        metrics_path: /metrics
+        scheme: http
