@@ -62,3 +62,18 @@ spec:
                 secretKeyRef:
                   name: auth-service-secret
                   key: DB_PASSWORD
+            - name: RabbitMq__Host
+              valueFrom:
+                configMapKeyRef:
+                  name: auth-service-config
+                  key: RabbitMq__Host
+            - name: RABBIT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: auth-service-secret
+                  key: RABBIT_PASSWORD
+            - name: RABBIT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: auth-service-secret
+                  key: RABBIT_USER      

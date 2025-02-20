@@ -22,20 +22,3 @@ persistence:
   size: 8Gi
   storageClass: "standard"
 
-metrics:
-  enabled: true
-  serviceMonitor:
-    enabled: false
-    additionalLabels:
-      release: prometheus
-    namespace: default
-    interval: 30s
-    path: /metrics
-    port: metrics
-  resources:
-    requests:
-      memory: 128Mi
-      cpu: 50m
-    limits:
-      memory: 256Mi
-      cpu: 100m

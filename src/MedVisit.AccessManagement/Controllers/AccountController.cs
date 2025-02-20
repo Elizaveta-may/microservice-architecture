@@ -29,9 +29,8 @@ namespace MedVisit.AccessManagement.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetProfile()
         {
-            var userId = User.FindFirst("user_id")?.Value;
-            var profile = int.Parse(userId);
-            return profile == null ? NotFound("Profile not found") : Ok(await _mediator.Send(new GetUserByIdQuery(profile)));
+            var userId = int.Parse(User.FindFirst("user_id")?.Value!);
+            return userId == 0 ? NotFound("Profile not found") : Ok(await _mediator.Send(new GetUserByIdQuery(userId)));
         }
 
         /// <summary>
@@ -44,8 +43,7 @@ namespace MedVisit.AccessManagement.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> UpdateProfile([FromBody] UserDto request)
         {
-            var userIdClaim = User.FindFirst("user_id")?.Value;
-            var userId = int.Parse(userIdClaim);
+            var userId = int.Parse(User.FindFirst("user_id")?.Value!);
             return Ok(await _mediator.Send(new UpdateUserCommand(userId, request)));
         }
     }

@@ -8,21 +8,21 @@ infra/
 ## Подготовка docker-образов
 ```bash
 cd src
-docker build -t elizavetamay/medvisit_accessmanagement:hw8 -f accessmanagement.Dockerfile .
-docker build -t elizavetamay/medvisit_authserver:hw8 -f authserver.Dockerfile .
-docker build -t elizavetamay/medvisit_bookingservice:hw9 -f bookingservice.Dockerfile .
-docker build -t elizavetamay/medvisit_catalogservice:hw8 -f catalogservice.Dockerfile .
-docker build -t elizavetamay/medvisit_scheduleservice:hw8 -f scheduleservice.Dockerfile .
-docker build -t elizavetamay/medvisit_paymentservice:hw8 -f paymentservice.Dockerfile .
-docker build -t elizavetamay/medvisit_notificationservice:hw8 -f notificationservice.Dockerfile .
+docker build -t elizavetamay/medvisit_accessmanagement:projectwork -f accessmanagement.Dockerfile .
+docker build -t elizavetamay/medvisit_authserver:projectwork -f authserver.Dockerfile .
+docker build -t elizavetamay/medvisit_bookingservice:projectwork -f bookingservice.Dockerfile .
+docker build -t elizavetamay/medvisit_catalogservice:projectwork -f catalogservice.Dockerfile .
+docker build -t elizavetamay/medvisit_scheduleservice:projectwork -f scheduleservice.Dockerfile .
+docker build -t elizavetamay/medvisit_paymentservice:projectwork -f paymentservice.Dockerfile .
+docker build -t elizavetamay/medvisit_notificationservice:projectwork -f notificationservice.Dockerfile .
 
-docker push elizavetamay/medvisit_accessmanagement:hw8
-docker push elizavetamay/medvisit_authserver:hw8
-docker push elizavetamay/medvisit_catalogservice:hw8
-docker push elizavetamay/medvisit_scheduleservice:hw8
-docker push elizavetamay/medvisit_bookingservice:hw9
-docker push elizavetamay/medvisit_paymentservice:hw8
-docker push elizavetamay/medvisit_notificationservice:hw8
+docker push elizavetamay/medvisit_accessmanagement:projectwork
+docker push elizavetamay/medvisit_authserver:projectwork
+docker push elizavetamay/medvisit_catalogservice:projectwork
+docker push elizavetamay/medvisit_scheduleservice:projectwork
+docker push elizavetamay/medvisit_bookingservice:projectwork
+docker push elizavetamay/medvisit_paymentservice:projectwork
+docker push elizavetamay/medvisit_notificationservice:projectwork
 ```
 
 ## Установка Prometheus Grafana

@@ -1,9 +1,10 @@
-﻿using System.Text;
-using System.Text.Json;
+﻿using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Exceptions;
+using System.Text;
+using System.Text.Json;
 
-namespace MedVisit.BookingService.RabbitMq
+namespace MedVisit.Core.RabbitMq
 {
     public class EventPublisher
     {
@@ -53,5 +54,4 @@ namespace MedVisit.BookingService.RabbitMq
             }
         }
     }
-
 }

@@ -31,7 +31,6 @@ namespace MedVisit.BookingService.Services
             int orderId = 0;
             try
             {
-                //TODO later add check data consistency
                 saga.AddStep(
                     name: "PaymentMedService",
                     action: async () => await _sagaStepsService.PayForService(userId, request.Amount, request.MedServiceName),

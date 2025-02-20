@@ -1,9 +1,7 @@
-﻿using MedVisit.BookingService.Entities;
-using MedVisit.BookingService.Enums;
+﻿using MedVisit.BookingService.Enums;
 using MedVisit.BookingService.Models;
-using MedVisit.BookingService.RabbitMq;
+using MedVisit.Core.RabbitMq;
 using Microsoft.EntityFrameworkCore;
-using System.Net.Http.Json;
 
 namespace MedVisit.BookingService.Services
 {
@@ -153,7 +151,7 @@ namespace MedVisit.BookingService.Services
         }
 
         public async Task<bool> SendSuccessBookingNotification(int userId, OrderRequest request)
-        {
+        {  //TODO Send ServiceOwner Notification 
             await PublishEvent(userId, "Success",
                 $"Вы успешно записались на услугу {request.MedServiceName} к {request.MedicalWorkerFullName}. Ждем вас {request.TimeSlot}. Сумма: {request.Amount:C}.",
                 "Успешная запись на услугу");

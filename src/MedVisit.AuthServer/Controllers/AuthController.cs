@@ -80,10 +80,28 @@ namespace MedVisit.AuthServer.Controllers
                 return Unauthorized(new { message = "Token validation failed" });
             }
 
+            if (User.Identity.IsAuthenticated && IsTokenExpired())
+            {
+                return Unauthorized(new { message = "Token expired. Please refresh your token." });
+            }
+
             HttpContext.Response.Headers.Add("x-user-id", userId);
             HttpContext.Response.Headers.Add("x-user-role", userRole);
 
             return Ok(new { message = "Token is valid", userId, userRole });
+        }
+
+        private bool IsTokenExpired()
+        {
+            var expirationClaim = User.FindFirst("exp")?.Value;
+
+            if (expirationClaim != null)
+            {
+                var expirationDate = DateTimeOffset.FromUnixTimeSeconds(long.Parse(expirationClaim)).UtcDateTime;
+                return expirationDate < DateTime.UtcNow;
+            }
+
+            return false;
         }
     }
 }
