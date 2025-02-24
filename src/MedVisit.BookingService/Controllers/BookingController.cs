@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Storage;
 using Newtonsoft.Json;
+using Prometheus;
 using StackExchange.Redis;
 using System.Security.Claims;
 
@@ -35,20 +36,27 @@ namespace MedVisit.BookingService.Controllers
         [Authorize(Roles = "User")]
         public async Task<IActionResult> Booking([FromBody] OrderRequest request)
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            TotalBookingRequests.Labels("booking").Inc(); 
+
             if (!ModelState.IsValid)
             {
+                FailedBookings.Labels("booking").Inc(); 
                 return BadRequest(ModelState);
             }
 
             var idempotencyKey = Request.Headers["Idempotency-Key"].FirstOrDefault();
             if (string.IsNullOrEmpty(idempotencyKey))
             {
+                FailedBookings.Labels("booking").Inc(); 
                 return BadRequest(new { message = "Idempotency-Key is required." });
             }
 
             var cachedResult = await _redisDb.StringGetAsync(idempotencyKey);
             if (cachedResult.HasValue)
             {
+                stopwatch.Stop();
+                BookingLatency.Labels("booking").Observe(stopwatch.Elapsed.TotalSeconds); 
                 return Ok(new { message = "Заказ уже создан ранее.", result = cachedResult.ToString() });
             }
 
@@ -58,10 +66,16 @@ namespace MedVisit.BookingService.Controllers
 
             if (!orderResult.IsSuccess)
             {
+                FailedBookings.Labels("booking").Inc(); 
+                stopwatch.Stop();
+                BookingLatency.Labels("booking").Observe(stopwatch.Elapsed.TotalSeconds); 
                 return BadRequest(new { message = orderResult.Message });
             }
 
             await _redisDb.StringSetAsync(idempotencyKey, JsonConvert.SerializeObject(orderResult), TimeSpan.FromHours(1));
+
+            stopwatch.Stop();
+            BookingLatency.Labels("booking").Observe(stopwatch.Elapsed.TotalSeconds); 
 
             return Ok(new
             {
@@ -69,13 +83,31 @@ namespace MedVisit.BookingService.Controllers
             });
         }
 
-
         [HttpPut("cancelBooking")]
         [Authorize(Roles = "User")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CancelBooking(int orderId)
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            TotalBookingRequests.Labels("cancelBooking").Inc(); 
+
+            var idempotencyKey = Request.Headers["Idempotency-Key"].FirstOrDefault();
+            if (string.IsNullOrEmpty(idempotencyKey))
+            {
+                FailedBookings.Labels("cancelBooking").Inc();
+                stopwatch.Stop();
+                BookingLatency.Labels("cancelBooking").Observe(stopwatch.Elapsed.TotalSeconds); 
+                return BadRequest(new { message = "Idempotency-Key is required." });
+            }
+
+            var cachedResult = await _redisDb.StringGetAsync(idempotencyKey);
+            if (cachedResult.HasValue)
+            {
+                stopwatch.Stop();
+                BookingLatency.Labels("cancelBooking").Observe(stopwatch.Elapsed.TotalSeconds);
+                return Ok(new { message = "Заказ уже был отменен ранее.", result = cachedResult.ToString() });
+            }
 
             var userId = User.FindFirst("user_id")?.Value;
 
@@ -83,8 +115,16 @@ namespace MedVisit.BookingService.Controllers
 
             if (orderResult.OrderId == 0)
             {
+                FailedBookings.Labels("cancelBooking").Inc(); 
+                stopwatch.Stop();
+                BookingLatency.Labels("cancelBooking").Observe(stopwatch.Elapsed.TotalSeconds);
                 return BadRequest(new { message = "Ошибка отмены бронирования." });
             }
+
+            await _redisDb.StringSetAsync(idempotencyKey, JsonConvert.SerializeObject(orderResult), TimeSpan.FromHours(1));
+
+            stopwatch.Stop();
+            BookingLatency.Labels("cancelBooking").Observe(stopwatch.Elapsed.TotalSeconds);
 
             return Ok(new
             {
@@ -93,5 +133,28 @@ namespace MedVisit.BookingService.Controllers
             });
         }
 
+        private static readonly Histogram BookingLatency = Metrics.CreateHistogram(
+            "booking_request_duration_seconds",
+            "Время выполнения запроса на создание бронирования.",
+            new HistogramConfiguration
+            {
+                LabelNames = new[] { "method" }
+            });
+
+        private static readonly Counter TotalBookingRequests = Metrics.CreateCounter(
+            "booking_requests_total",
+            "Общее количество запросов на создание бронирования.",
+            new CounterConfiguration
+            {
+                LabelNames = new[] { "method" }
+            });
+
+        private static readonly Counter FailedBookings = Metrics.CreateCounter(
+            "failed_bookings_total",
+            "Общее количество неуспешных бронирований.",
+            new CounterConfiguration
+            {
+                LabelNames = new[] { "method" }
+            });
     }
 }

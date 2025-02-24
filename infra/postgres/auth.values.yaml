@@ -22,11 +22,3 @@ persistence:
   size: 8Gi
   storageClass: "standard"
 
-metrics:
-  enabled: false
-  serviceMonitor:
-    enabled: false
-    namespace: default  
-    interval: 30s  
-    path: /metrics 
-    port: metrics  

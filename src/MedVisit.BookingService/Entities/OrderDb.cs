@@ -12,7 +12,6 @@ namespace MedVisit.BookingService.Entities
         public string MedicalWorkerFullName { get; set; }
         public int TimeSlotId { get; set; }
         public string TimeSlot { get; set; }
-
         public decimal Amount { get; set; }
         public DateTime CreatedAt { get; set; }
         public OrderStatus Status { get; set; }

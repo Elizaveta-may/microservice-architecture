@@ -1,10 +1,11 @@
 using System.Text;
 using MedVisit.BookingService;
-using MedVisit.BookingService.RabbitMq;
+using MedVisit.Core.RabbitMq;
 using MedVisit.BookingService.Services;
 using MedVisit.Core.Middleware;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +19,6 @@ var connectionString = $"Host={host};Port={port};Database={database};Username={u
 
 builder.Services.AddDbContext<BookingDbContext>(options =>
     options.UseNpgsql(connectionString));
-// Add services to the container.
 
 builder.Services.AddScoped<IOrderService, OrderService>(); 
 builder.Services.AddScoped<ISagaStepsService, SagaStepsService>();
@@ -44,7 +44,6 @@ builder.Services.AddHttpClient("ScheduleService", client =>
     client.BaseAddress = new Uri(builder.Configuration["Endpoints:ScheduleService"]);
 });
 
-
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
@@ -60,7 +59,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<AuthMiddleware>();
-
+app.UseHttpMetrics();
+app.MapMetrics();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

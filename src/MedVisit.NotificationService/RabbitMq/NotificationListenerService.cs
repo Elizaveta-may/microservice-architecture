@@ -27,19 +27,25 @@ namespace MedVisit.NotificationService.RabbitMq
                 Password = Environment.GetEnvironmentVariable("RABBIT_PASSWORD")
             };
 
-
             var connection = await factory.CreateConnectionAsync();
-            var channel = await connection.CreateChannelAsync();
 
-            await channel.ExchangeDeclareAsync("booking_exchange", ExchangeType.Fanout);
+            var bookingChannel = await connection.CreateChannelAsync();
+            var authChannel = await connection.CreateChannelAsync();
 
-            var queueName = "notification_queue";
-            await channel.QueueDeclareAsync(queueName, durable: true, exclusive: false, autoDelete: false, arguments: null);
+            await bookingChannel.ExchangeDeclareAsync("booking_exchange", ExchangeType.Fanout);
+            await authChannel.ExchangeDeclareAsync("auth_exchange", ExchangeType.Fanout);
 
-            await channel.QueueBindAsync(queueName, "booking_exchange", "");
+            var bookingQueueName = "notification_queue";
+            await bookingChannel.QueueDeclareAsync(bookingQueueName, durable: true, exclusive: false, autoDelete: false, arguments: null);
 
-            var consumer = new AsyncEventingBasicConsumer(channel);
-            consumer.ReceivedAsync += async (model, ea) =>
+            var authQueueName = "auth_notification_queue";
+            await authChannel.QueueDeclareAsync(authQueueName, durable: true, exclusive: false, autoDelete: false, arguments: null);
+
+            await bookingChannel.QueueBindAsync(bookingQueueName, "booking_exchange", "");
+            await authChannel.QueueBindAsync(authQueueName, "auth_exchange", "");
+
+            var bookingConsumer = new AsyncEventingBasicConsumer(bookingChannel);
+            bookingConsumer.ReceivedAsync += async (model, ea) =>
             {
                 var body = ea.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
@@ -62,11 +68,36 @@ namespace MedVisit.NotificationService.RabbitMq
                 }
             };
 
-            channel.BasicConsumeAsync(queueName, autoAck: true, consumer);
+            var authConsumer = new AsyncEventingBasicConsumer(authChannel);
+            authConsumer.ReceivedAsync += async (model, ea) =>
+            {
+                var body = ea.Body.ToArray();
+                var message = Encoding.UTF8.GetString(body);
+                var notificationMessage = JsonSerializer.Deserialize<Notification>(message);
 
-            // Keep the service running
+                if (notificationMessage != null)
+                {
+                    using var scope = _serviceProvider.CreateScope();
+                    var dbContext = scope.ServiceProvider.GetRequiredService<NotificationDbContext>();
+
+                    var entity = new NotificationDb
+                    {
+                        UserId = notificationMessage.UserId,
+                        Subject = notificationMessage.Subject,
+                        Message = notificationMessage.Message
+                    };
+
+                    await dbContext.Notifications.AddAsync(entity);
+                    await dbContext.SaveChangesAsync();
+                }
+            };
+
+            await bookingChannel.BasicConsumeAsync(bookingQueueName, autoAck: true, bookingConsumer);
+            await authChannel.BasicConsumeAsync(authQueueName, autoAck: true, authConsumer);
+
             await Task.Delay(Timeout.Infinite, stoppingToken);
         }
+
     }
 
 }

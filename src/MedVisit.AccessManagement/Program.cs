@@ -1,7 +1,7 @@
 using MedVisit.Common.AuthDbContext;
 using MedVisit.Core.Middleware;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +32,7 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
 builder.Services.AddHttpClient();
+builder.Services.UseHttpClientMetrics();
 
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
@@ -48,6 +49,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware<AuthMiddleware>();
 
+app.UseMetricServer();
+app.UseHttpMetrics();
+app.MapMetrics();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
